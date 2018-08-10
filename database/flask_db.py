@@ -6,4 +6,5 @@ app = Flask(__name__, template_folder='../frontend/templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'sqlite:///insurance_database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'JFKLDSUIORU#@!(*#(FDSJK'
 db = SQLAlchemy(app)
