@@ -2,6 +2,7 @@ from database.flask_db import db
 
 
 def create_tables():
+    db.drop_all()
     db.create_all()
 
 

@@ -1,3 +1,4 @@
+from frontend import routes
 from database.flask_db import app
 
 
