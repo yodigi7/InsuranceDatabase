@@ -1,0 +1,22 @@
+{% extends 'default.html' %}
+{% block content %}
+{% for person in persons %}
+    <div class="btn btn-primary col-12 row mb-1" data-toggle="collapse" data-target="#{{ person.unique_id }}" aria-expanded="true" aria-controls="collapseExample">
+        {{ person.first_name }} {{ person.last_name }}
+    </div>
+    <div class="collapse show row mb-4" id="{{ person.unique_id }}">
+        <div class="card card-body">
+            First Name: {{ person.first_name }} <br>
+            Middle Name: {{ person.middle_name }} <br>
+            Last Name: {{ person.last_name }} <br>
+            Address: {{ person.address }} <br>
+            Mailing Address: {{ person.mailing_address }} <br>
+            Birth date: {{ person.birth_date }} <br>
+            Is Prospect: {{ person.is_prospect }} <br>
+            <a href="/get-person/{{ person.unique_id }}">
+                GOTO
+            </a>
+        </div>
+    </div>
+{% endfor %}
+{% endblock content %}

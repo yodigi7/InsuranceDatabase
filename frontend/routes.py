@@ -16,6 +16,18 @@ def home():
     return render_template('default.html', title='Home')
 
 
+@app.route('/all-people')
+def all_people():
+    persons = list(Person.query.all())
+    return render_template('all_people_results.html', title='All People', persons=persons)
+
+
+@app.route('/search-person')
+def search_person():
+    persons = list(Person.query.all())
+    return render_template('search_person.html', title='Search Person', persons=persons)
+
+
 @app.route('/get-person/<int:unique_id>', methods=['GET', 'POST'])
 def get_person(unique_id):
     person = Person.query.get_or_404(unique_id)
@@ -39,15 +51,9 @@ def get_person(unique_id):
     return render_template('get_person.html', title='Get Person {}'.format(unique_id), person=person, form=form)
 
 
-@app.route('/find-person')
-def find_person():
-    persons = list(Person.query.all())
-    return render_template('find_person_results.html', title='Find Person', persons=persons)
-
-
 @app.route('/add-basic-person', methods=['GET', 'POST'])
 def add_basic_person():
-    form = AddBasicPersonForm(request.form)
+    form = AddBasicPersonForm()
     if form.validate_on_submit():
         Person(first_name=form.first_name.data,
                middle_name=form.middle_name.data,
