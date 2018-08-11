@@ -10,6 +10,7 @@ class PersonWork(db.Model):
     employer = db.Column(db.String(50))
     employer_start = db.Column(db.Date())
     level_of_education = db.Column(db.String(20))
+    person = db.relationship('Person', backref='work')
 
     def add_to_database(self) -> None:
         db.session.add(self)

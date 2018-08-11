@@ -1,0 +1,17 @@
+{% extends 'default.html' %}
+{% block content %}
+{% for person in persons %}
+    <a href="/get-person/{{ person.unique_id }}">
+    <div class="btn">
+        {{ person.first_name }}
+    </div>
+    </a>
+    <div id="{{ person.unique_id }}">
+        <div class="card card-body">
+            First Name: {{ person.first_name }} <br>
+            Middle Name: {{ person.middle_name }} <br>
+            Last Name: {{ person.last_name }} <br>
+        </div>
+    </div>
+{% endfor %}
+{% endblock content %}

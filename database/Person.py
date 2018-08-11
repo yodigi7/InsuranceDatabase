@@ -18,7 +18,6 @@ class Person(db.Model):
     social_security_number = db.Column(db.Integer())
     is_prospect = db.Column(db.Boolean())
     can_use_credit_score = db.Column(db.Boolean())
-    work = db.relationship('PersonWork', backref='person')
 
     def __str__(self):
         return 'Person(unique_id={}, first_name={}, middle_name={}, last_name={}, prefix={}, suffix={}, address={}'\
@@ -27,8 +26,15 @@ class Person(db.Model):
     def __repr__(self):
         return str(self)
 
-    def add_to_database(self) -> None:
+    def update(self) -> None:
+        db.session.commit()
+
+    def add(self) -> None:
         db.session.add(self)
+        db.session.commit()
+
+    def delete(self) -> None:
+        db.session.delete(self)
         db.session.commit()
 
 
