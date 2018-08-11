@@ -22,7 +22,7 @@ def get_person(unique_id):
     form = GetBasicPersonForm()
     form.first_name.default = person.first_name
     print(request.form)
-    if 'save' in request.form:
+    if 'update' in request.form:
         person.first_name = form.first_name.data
         person.middle_name = form.middle_name.data
         person.last_name = form.last_name.data
@@ -31,8 +31,10 @@ def get_person(unique_id):
         person.birth_date = form.birth_date.data
         person.is_prospect = form.is_prospect.data
         person.update()
+        flash('Person updated', 'success')
     if 'delete' in request.form:
         person.delete()
+        flash('Person deleted', 'success')
         return redirect(url_for('find_person'))
     return render_template('get_person.html', title='Get Person {}'.format(unique_id), person=person, form=form)
 
@@ -47,7 +49,6 @@ def find_person():
 def add_basic_person():
     form = AddBasicPersonForm(request.form)
     if form.validate_on_submit():
-        flash('Person saved', 'success')
         Person(first_name=form.first_name.data,
                middle_name=form.middle_name.data,
                last_name=form.last_name.data,
@@ -55,7 +56,8 @@ def add_basic_person():
                mailing_address=form.mailing_address.data,
                birth_date=form.birth_date.data,
                is_prospect=form.is_prospect.data).add()
-        return redirect(url_for('home'))
+        flash('Person saved', 'success')
+        return redirect(url_for('find_person'))
     elif request.method == 'POST':
         for item in form.errors.items():
             flash(item, 'danger')

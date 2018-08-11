@@ -12,5 +12,5 @@ class GetBasicPersonForm(FlaskForm):
     mailing_address = StringField('Mailing Address (if different)', validators=[Length(max=30)])
     birth_date = DateField('Birth date', validators=[Optional()])
     is_prospect = BooleanField('Is Prospect')
-    save = SubmitField('Save')
+    update = SubmitField('Update')
     delete = SubmitField('Delete')
