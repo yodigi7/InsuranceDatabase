@@ -1,10 +1,14 @@
 from database.flask_db import db
 
+from database.Person_Work import PersonWork
+from database.Person_Notes import PersonNotes
+from database.Person_Driving import PersonDrivingViolation, PersonDrivingAccident
+
 
 class Person(db.Model):
     __tablename__ = 'people'
 
-    unique_id = db.Column(db.Integer, primary_key=True)
+    unique_id = db.Column(db.Integer(), primary_key=True)
     first_name = db.Column(db.String(30))
     middle_name = db.Column(db.String(30))
     last_name = db.Column(db.String(30))
@@ -13,11 +17,14 @@ class Person(db.Model):
     address = db.Column(db.String(70))
     mailing_address = db.Column(db.String(70))
     birth_date = db.Column(db.Date())
-    height = db.Column(db.String(4))
-    weight = db.Column(db.String(4))
+    height = db.Column(db.Numeric(4))
+    weight = db.Column(db.Numeric(4))
     social_security_number = db.Column(db.Integer())
     is_prospect = db.Column(db.Boolean())
     can_use_credit_score = db.Column(db.Boolean())
+
+    driving_violations = db.relationship('PersonDrivingViolation', backref='person')
+    driving_accidents = db.relationship('PersonDrivingAccident', backref='person')
 
     def __str__(self):
         return 'Person(unique_id={}, first_name={}, middle_name={}, last_name={}, prefix={}, suffix={}, address={}'\
@@ -26,7 +33,8 @@ class Person(db.Model):
     def __repr__(self):
         return str(self)
 
-    def update(self) -> None:
+    @staticmethod
+    def update() -> None:
         db.session.commit()
 
     def add(self) -> None:

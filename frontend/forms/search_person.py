@@ -4,7 +4,7 @@ from wtforms.fields.html5 import DateField
 from wtforms.validators import Length, Optional
 
 
-class GetBasicPersonForm(FlaskForm):
+class SearchPersonForm(FlaskForm):
     prefix = StringField('Prefix', validators=[Length(max=10)])
     first_name = StringField('First Name', validators=[Length(max=30)])
     middle_name = StringField('Middle Name', validators=[Length(max=30)])
@@ -14,5 +14,4 @@ class GetBasicPersonForm(FlaskForm):
     mailing_address = StringField('Mailing Address (if different)', validators=[Length(max=30)])
     birth_date = DateField('Birth date', validators=[Optional()])
     is_prospect = BooleanField('Is Prospect')
-    update_btn = SubmitField('Update')
-    delete = SubmitField('Delete')
+    search = SubmitField('Search')
