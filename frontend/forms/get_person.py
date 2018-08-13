@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SubmitField
+from wtforms import StringField, BooleanField, SubmitField, DecimalField
 from wtforms.fields.html5 import DateField
 from wtforms.validators import Length, Optional
 
@@ -14,5 +14,6 @@ class GetBasicPersonForm(FlaskForm):
     mailing_address = StringField('Mailing Address (if different)', validators=[Length(max=30)])
     birth_date = DateField('Birth date', validators=[Optional()])
     is_prospect = BooleanField('Is Prospect')
+    height = DecimalField('Height')
     update_btn = SubmitField('Update')
     delete = SubmitField('Delete')

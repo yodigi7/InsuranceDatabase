@@ -1,10 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, SubmitField
+from wtforms import StringField, BooleanField, SubmitField, DecimalField, IntegerField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import Length, Optional
+from wtforms.validators import Length, Optional, NumberRange
 
 
-class AddBasicPersonForm(FlaskForm):
+class AddPersonForm(FlaskForm):
     prefix = StringField('Prefix', validators=[Length(max=10)])
     first_name = StringField('First Name', validators=[Length(max=30)])
     middle_name = StringField('Middle Name', validators=[Length(max=30)])
@@ -14,6 +14,10 @@ class AddBasicPersonForm(FlaskForm):
     mailing_address = StringField('Mailing Address (if different)', validators=[Length(max=70)])
     birth_date = DateField('Birth date', validators=[Optional()])
     is_prospect = BooleanField('Is Prospect')
+    social_security = IntegerField('Social Security Number', validators=[NumberRange(min=100000000, max=999999999), Optional()])
+    height = DecimalField('Height', validators=[NumberRange(min=0, max=9999), Optional()])
+    weight = DecimalField('Weight', validators=[NumberRange(min=0, max=9999), Optional()])
+    can_use_credit_score = BooleanField('Can use credit score')
     submit = SubmitField('Save')
 
 

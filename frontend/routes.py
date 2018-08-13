@@ -1,9 +1,13 @@
 from flask import render_template, flash, redirect, url_for, request
+from sqlalchemy import or_
+from sqlalchemy.orm import load_only
 
 from database.Person import Person
+from database.Person_Driving import PersonDrivingAccident
 
 from database.flask_db import app
 from frontend.forms.add_basic_person import AddBasicPersonForm
+from frontend.forms.add_person import AddPersonForm
 from frontend.forms.get_person import GetBasicPersonForm
 from frontend.forms.search_general_person import SearchGeneralPersonForm
 from frontend.forms.search_person import SearchPersonForm
@@ -42,8 +46,8 @@ def search_person():
     form = SearchPersonForm()
     if request.method == 'POST':
         if not form.prefix.data and not form.first_name.data and not form.middle_name.data and \
-           not form.last_name.data and not form.suffix.data and not form.address.data and \
-           not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
+                not form.last_name.data and not form.suffix.data and not form.address.data and \
+                not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
             print('To all people')
             return redirect(url_for('all_people'))
         else:
@@ -74,8 +78,33 @@ def get_person(unique_id):
         print('error')
         for item in form.errors.items():
             flash(item, 'danger')
-    # return find_people([1, 2, 3])
     return render_template('get_person.html', title='Get Person {}'.format(unique_id), person=person, form=form)
+
+
+@app.route('/add-person', methods=['GET', 'POST'])
+def add_person():
+    form = AddPersonForm()
+    if form.validate_on_submit():
+        Person(prefix=form.prefix.data,
+               first_name=form.first_name.data,
+               middle_name=form.middle_name.data,
+               last_name=form.last_name.data,
+               suffix=form.suffix.data,
+               address=form.address.data,
+               mailing_address=form.mailing_address.data,
+               birth_date=form.birth_date.data,
+               is_prospect=form.is_prospect.data,
+               social_security_number=form.social_security.data,
+               height=str(form.height.data),
+               weight=str(form.weight.data),
+               can_use_credit_score=form.can_use_credit_score.data).add()
+        flash('Person saved', 'success')
+        return redirect(url_for('all_people'))
+    elif request.method == 'POST':
+        for item in form.errors.items():
+            flash(item, 'danger')
+            return redirect(url_for('add_person'))
+    return render_template('add_person.html', title='Adding a Person', form=form)
 
 
 @app.route('/add-basic-person', methods=['GET', 'POST'])
@@ -101,15 +130,18 @@ def add_basic_person():
 
 
 def get_general_people_like(inp: str) -> list:
-    return_list = [x for x in Person.query.filter(Person.prefix.ilike('%{}%'.format(inp)))]
-    return_list += [x for x in Person.query.filter(Person.first_name.ilike('%{}%'.format(inp))) if x not in return_list]
-    return_list += [x for x in Person.query.filter(Person.middle_name.ilike('%{}%'.format(inp))) if x not in return_list]
-    return_list += [x for x in Person.query.filter(Person.last_name.ilike('%{}%'.format(inp))) if x not in return_list]
-    return_list += [x for x in Person.query.filter(Person.suffix.ilike('%{}%'.format(inp))) if x not in return_list]
-    return_list += [x for x in Person.query.filter(Person.address.ilike('%{}%'.format(inp))) if x not in return_list]
-    return_list += [x for x in Person.query.filter(Person.mailing_address.ilike('%{}%'.format(inp))) if x not in return_list]
-    return_list += [x for x in Person.query.filter(Person.birth_date.ilike('%{}%'.format(inp))) if x not in return_list]
-    return [x.unique_id for x in return_list]
+    return [x.unique_id for x in Person.query.filter(or_(Person.prefix.ilike('%{}%'.format(inp)),
+                                                         Person.first_name.ilike('%{}%'.format(inp)),
+                                                         Person.middle_name.ilike('%{}%'.format(inp)),
+                                                         Person.last_name.ilike('%{}%'.format(inp)),
+                                                         Person.suffix.ilike('%{}%'.format(inp)),
+                                                         Person.address.ilike('%{}%'.format(inp)),
+                                                         Person.mailing_address.ilike('%{}%'.format(inp)),
+                                                         Person.birth_date.ilike('%{}%'.format(inp)),
+                                                         Person.height.ilike('%{}%'.format(inp)),
+                                                         Person.weight.ilike('%{}%'.format(inp)),
+                                                         Person.social_security_number.ilike(
+                                                             '%{}%'.format(inp)))).all()]
 
 
 def get_people_like(form) -> list:
