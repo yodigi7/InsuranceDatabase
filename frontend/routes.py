@@ -255,7 +255,7 @@ def api_person_driving_violation():
 
 
 @app.route('/api/person-driving-violation/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
-def api_person_driving_violation(unique_id: int):
+def api_person_driving_violation_id(unique_id: int):
     driving_violation = PersonDrivingViolation.query.filter(PersonDrivingViolation.unique_id == unique_id).one()
     if request.method == 'GET':
         return jsonify(driving_violation.to_json())
