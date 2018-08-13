@@ -49,10 +49,10 @@ class Person(db.Model):
             'social_security_number': self.social_security_number,
             'is_prospect': self.is_prospect,
             'can_use_credit_score': self.can_use_credit_score,
-            'notes': [x.to_json for x in self.notes],
-            'work': [x.to_json for x in self.work],
-            'driving_violations': [x.to_json for x in self.driving_violations],
-            'driving_accidents': [x.to_json for x in self.driving_accidents]
+            'note': self.note[0].to_json_str(),
+            'work': [x.to_json_str() for x in self.work],
+            'driving_violations': [x.to_json_str() for x in self.driving_violations],
+            'driving_accidents': [x.to_json_str() for x in self.driving_accidents]
         }
 
     @staticmethod

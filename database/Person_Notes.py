@@ -6,7 +6,7 @@ class PersonNotes(db.Model):
 
     person_id = db.Column(db.Integer, db.ForeignKey('people.unique_id'), primary_key=True)
     note = db.Column(db.Text())
-    person = db.relationship('Person', backref='notes')
+    person = db.relationship('Person', backref='note')
 
     def __str__(self):
         return 'Person(person_id={}, note={}'.format(self.person_id, self.note)
@@ -26,11 +26,8 @@ class PersonNotes(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def to_json(self) -> dict:
-        return {
-            'person_id': self.person_id,
-            'note': self.note
-        }
+    def to_json_str(self) -> str:
+        return self.note
 
 
 if __name__ == '__main__':

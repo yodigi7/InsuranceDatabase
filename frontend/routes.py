@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from sqlalchemy import or_
 
 from database.Person import Person
+from database.Person_Notes import PersonNotes
 from database.flask_db import app
 from frontend.forms.add_basic_person import AddBasicPersonForm
 from frontend.forms.add_person import AddPersonForm
