@@ -1,13 +1,13 @@
 from math import ceil
 
 import requests
-from flask import render_template, flash, redirect, url_for, request, jsonify, json
+from flask import render_template, flash, redirect, url_for, request, jsonify
 from sqlalchemy import or_
 
 from database.Person import Person, json_to_person
-from database.Person_Driving import json_to_accident, json_to_violation
+from database.Person_Driving import json_to_accident, json_to_violation, PersonDrivingViolation, PersonDrivingAccident
 from database.Person_Notes import json_to_note, PersonNotes
-from database.Person_Work import json_to_work
+from database.Person_Work import json_to_work, PersonWork
 from database.flask_db import app
 from frontend.forms.add_basic_person import AddBasicPersonForm
 from frontend.forms.add_person import AddPersonForm
@@ -125,20 +125,7 @@ def add_basic_person():
     return render_template('add_basic_person.html', title='Adding a Person', form=form)
 
 
-@app.route('/api/person-driving-accident', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def api_person_driving_accident():
-    if request.method == 'POST':
-        input_json = request.get_json()
-        person_driving_accident = json_to_accident(input_json)
-        if 'unique_id' in input_json:
-            person_driving_accident.person_id = input_json.get('person_id')
-            person_driving_accident.paid_by = input_json.get('paid_by')
-            person_driving_accident.description = input_json.get('description')
-            person_driving_accident.injuries = input_json.get('injuries')
-            person_driving_accident.percent_fault = input_json.get('percent_fault')
-            person_driving_accident.date_occurred = input_json.get('date_occurred')
-            person_driving_accident.update()
-        return jsonify({'success': True})
+# API STUFF BELOW HERE
 
 
 @app.route('/api/person-notes', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -158,7 +145,7 @@ def api_person_notes():
 
 
 @app.route('/api/person-notes/<int:person_id>', methods=['GET', 'DELETE'])
-def delete_api_person_notes(person_id):
+def api_person_notes_id(person_id: int):
     person = PersonNotes.query.filter(PersonNotes.person_id == person_id).one()
     if request.method == 'DELETE':
         person.delete()
@@ -183,6 +170,51 @@ def api_person_work():
             return jsonify({'success': True})
 
 
+@app.route('/api/person-work/<int:person_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_person_work_id(person_id: int):
+    work = PersonWork.query.filter(PersonWork.person_id == person_id).one()
+    if request.method == 'DELETE':
+        work.delete()
+        return jsonify({'success': True})
+    if request.method == 'GET':
+        return jsonify(work.to_json())
+
+
+@app.route('/api/person-driving-accident', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def api_person_driving_accident():
+    if request.method == 'POST':
+        input_json = request.get_json()
+        person_driving_accident = json_to_accident(input_json)
+        if 'unique_id' in input_json:
+            person_driving_accident.person_id = input_json.get('person_id')
+            person_driving_accident.paid_by = input_json.get('paid_by')
+            person_driving_accident.description = input_json.get('description')
+            person_driving_accident.injuries = input_json.get('injuries')
+            person_driving_accident.percent_fault = input_json.get('percent_fault')
+            person_driving_accident.date_occurred = input_json.get('date_occurred')
+            person_driving_accident.update()
+        return jsonify({'success': True})
+
+
+@app.route('/api/person-driving-accident/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_person_driving_accident_id(unique_id: int):
+    driving_accident = PersonDrivingAccident.query.filter(PersonDrivingAccident.unique_id == unique_id).one()
+    if request.method == 'GET':
+        return jsonify(driving_accident.to_json())
+    elif request.method == 'DELETE':
+        driving_accident.delete()
+        return jsonify({'success': True})
+    elif request.method == 'PUT':
+        input_json = request.get_json()
+        driving_accident.person_id = input_json.get('person_id')
+        driving_accident.paid_by = input_json.get('paid_by')
+        driving_accident.description = input_json.get('description')
+        driving_accident.injuries = input_json.get('injuries')
+        driving_accident.percent_fault = input_json.get('percent_fault')
+        driving_accident.date_occurred = input_json.get('date_occurred')
+        driving_accident.update()
+
+
 @app.route('/api/person-driving-violation', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def api_person_driving_violation():
     if request.method == 'POST':
@@ -197,39 +229,25 @@ def api_person_driving_violation():
             person_driving_violation.date_occurred = input_json.get('date_occurred')
             person_driving_violation.update()
         return jsonify({'success': True})
+    if request.method == 'GET':
+        page = 1
+        every = PersonDrivingViolation.query
+        total_pages = ceil(every.count()/20)
+        if 'page' in request.args:
+            page = int(request.args['page'])
+        return_person_driviing_violations = {
+            'driving_violations': [x.to_json() for x in every.paginate(page, 20, False).items],
+            'pages': total_pages
+        }
+        return jsonify(return_person_driviing_violations)
 
 
-@app.route('/api/person', methods=['GET', 'POST', 'PUT', 'DELETE'])
+@app.route('/api/person', methods=['GET', 'POST'])
 def api_person():
     if request.method == 'POST':
         print(request.get_json())
         input_json = request.get_json()
-        person = json_to_person(input_json)
-        if 'unique_id' in input_json:
-            person.prefix = input_json.get('prefix')
-            person.first_name = input_json.get('first_name')
-            person.middle_name = input_json.get('middle_name')
-            person.last_name = input_json.get('last_name')
-            person.suffix = input_json.get('suffix')
-            person.address = input_json.get('address')
-            person.mailing_address = input_json.get('mailing_address')
-            person.birth_date = input_json.get('birth_date')
-            person.height = input_json.get('height')
-            person.weight = input_json.get('weight')
-            person.is_prospect = input_json.get('is_prospect')
-            person.social_security_number = input_json.get('social_security_number')
-            person.can_use_credit_score = input_json.get('can_use_credit_score')
-            person.update()
-            if input_json.get('driving_accidents'):
-                for driving_accident in input_json['driving_accidents'].values():
-                    requests.post('/api/person-driving-accident', json=jsonify(driving_accident))
-            if input_json.get('driving_violations'):
-                for driving_violation in input_json['driving_violations'].values():
-                    requests.post('/api/person-driving-violation', json=jsonify(driving_violation))
-            if input_json.get('note'):
-                requests.post('/api/person-note', json=jsonify(input_json['note'][0]))
-            if input_json.get('work'):
-                requests.post('/api/person-work', json=jsonify(input_json['work'][0]))
+        json_to_person(input_json).add()
         return jsonify({'success': True})
     elif request.method == 'GET':
         page = 1
@@ -242,6 +260,45 @@ def api_person():
             'pages': total_pages
         }
         return jsonify(return_people)
+
+
+@app.route('/api/person/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_person_id(unique_id: int):
+    person = Person.query.filter(Person.unique_id == unique_id).one()
+    if request.method == 'PUT':
+        input_json = request.get_json()
+        person.prefix = input_json.get('prefix')
+        person.first_name = input_json.get('first_name')
+        person.middle_name = input_json.get('middle_name')
+        person.last_name = input_json.get('last_name')
+        person.suffix = input_json.get('suffix')
+        person.address = input_json.get('address')
+        person.mailing_address = input_json.get('mailing_address')
+        person.birth_date = input_json.get('birth_date')
+        person.height = input_json.get('height')
+        person.weight = input_json.get('weight')
+        person.is_prospect = input_json.get('is_prospect')
+        person.social_security_number = input_json.get('social_security_number')
+        person.can_use_credit_score = input_json.get('can_use_credit_score')
+        person.update()
+        if input_json.get('driving_accidents'):
+            for driving_accident in input_json['driving_accidents'].values():
+                requests.put('/api/person-driving-accident/{}'.format(driving_accident['unique_id']),
+                             json=jsonify(driving_accident))
+        if input_json.get('driving_violations'):
+            for driving_violation in input_json['driving_violations'].values():
+                requests.put('/api/person-driving-violation/{}'.format(driving_violation['unique_id']),
+                             json=jsonify(driving_violation))
+        if input_json.get('note'):
+            requests.put('/api/person-note', json=jsonify(input_json['note'][0]))
+        if input_json.get('work'):
+            requests.put('/api/person-work', json=jsonify(input_json['work'][0]))
+        return jsonify({'success': True})
+    elif request.method == 'GET':
+        return jsonify(person.to_json())
+    elif request.method == 'DELETE':
+        person.delete()
+        return jsonify({'success': True})
 
 
 def get_general_people_like_or(inp: str) -> list:

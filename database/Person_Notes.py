@@ -6,7 +6,6 @@ class PersonNotes(db.Model):
 
     person_id = db.Column(db.Integer, db.ForeignKey('people.unique_id'), primary_key=True)
     note = db.Column(db.Text())
-    person = db.relationship('Person', backref='note')
 
     def __str__(self):
         return 'Person(person_id={}, note={}'.format(self.person_id, self.note)
@@ -31,9 +30,6 @@ class PersonNotes(db.Model):
 
 
 def json_to_note(input_json: dict) -> PersonNotes:
-    query = PersonNotes.query.filter(PersonNotes.person_id == input_json['person_id'])
-    if query.one_or_none():
-        return query.one()
     person_notes = PersonNotes(person_id=input_json['person_id'], note=input_json['note'])
     person_notes.add()
     return person_notes

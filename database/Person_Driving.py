@@ -82,10 +82,6 @@ class PersonDrivingAccident(db.Model):
 
 
 def json_to_accident(input_json: dict) -> PersonDrivingAccident:
-    if input_json.get('unique_id'):
-        query = PersonDrivingAccident.query.filter(PersonDrivingAccident.unique_id == input_json['unique_id'])
-        if query.one_or_none():
-            return query.one()
     person_driving_accident = PersonDrivingAccident(unique_id=input_json.get('unique_id'),
                                                     person_id=input_json.get('unique_id'),
                                                     date_occurred=input_json.get('date_occurred'),
@@ -98,10 +94,6 @@ def json_to_accident(input_json: dict) -> PersonDrivingAccident:
 
 
 def json_to_violation(input_json: dict) -> PersonDrivingViolation:
-    if input_json.get('unique_id'):
-        query = PersonDrivingViolation.query.filter(PersonDrivingViolation.unique_id == input_json['unique_id'])
-        if query.one_or_none():
-            return query.one()
     person_driving_violation = PersonDrivingViolation(unique_id=input_json.get('unique_id'),
                                                       person_id=input_json.get('person_id'),
                                                       date_received=input_json.get('date_received'),

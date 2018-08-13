@@ -1,5 +1,6 @@
-from database import Person_Notes, Person_Driving, Person_Work
+from database import Person_Driving
 from database.flask_db import db
+import simplejson as json
 
 from database.Person_Work import PersonWork
 from database.Person_Notes import PersonNotes
@@ -24,8 +25,10 @@ class Person(db.Model):
     is_prospect = db.Column(db.Boolean())
     can_use_credit_score = db.Column(db.Boolean())
 
-    driving_violations = db.relationship('PersonDrivingViolation', backref='person')
-    driving_accidents = db.relationship('PersonDrivingAccident', backref='person')
+    note = db.relationship('PersonNotes', backref='person', cascade='delete, delete-orphan')
+    work = db.relationship('PersonWork', backref='person', cascade='delete, delete-orphan')
+    driving_violations = db.relationship('PersonDrivingViolation', backref='person', cascade='delete, delete-orphan')
+    driving_accidents = db.relationship('PersonDrivingAccident', backref='person', cascade='delete, delete-orphan')
 
     def __str__(self):
         return 'Person(unique_id={}, first_name={}, middle_name={}, last_name={}, prefix={}, suffix={}, address={}' \
@@ -114,12 +117,7 @@ def create_person(dictionary: dict) -> Person:
 
 
 def json_to_person(input_json: dict) -> Person:
-    print(Person.query.filter(Person.unique_id == input_json['unique_id']).one_or_none())
-    if Person.query.filter(Person.unique_id == input_json['unique_id']).one_or_none():
-        return Person.query.filter(Person.unique_id == input_json['unique_id']).one()
-    print(input_json['driving_accidents'])
     person = create_person(input_json)
-    person.add()
     return person
 
 
