@@ -6,6 +6,8 @@ from sqlalchemy import or_
 
 from database.Person import Person, json_to_person
 from database.Person_Driving import json_to_accident, json_to_violation
+from database.Person_Notes import json_to_note, PersonNotes
+from database.Person_Work import json_to_work
 from database.flask_db import app
 from frontend.forms.add_basic_person import AddBasicPersonForm
 from frontend.forms.add_person import AddPersonForm
@@ -136,7 +138,49 @@ def api_person_driving_accident():
             person_driving_accident.percent_fault = input_json.get('percent_fault')
             person_driving_accident.date_occurred = input_json.get('date_occurred')
             person_driving_accident.update()
-        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        return jsonify({'success': True})
+
+
+@app.route('/api/person-notes', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def api_person_notes():
+    if request.method == 'POST':
+        input_json = request.get_json()
+        person_note = json_to_note(input_json)
+        if 'unique_id' in input_json:
+            person_note.person_id = input_json.get('person_id')
+            person_note.paid_by = input_json.get('paid_by')
+            person_note.description = input_json.get('description')
+            person_note.injuries = input_json.get('injuries')
+            person_note.percent_fault = input_json.get('percent_fault')
+            person_note.date_occurred = input_json.get('date_occurred')
+            person_note.update()
+        return jsonify({'success': True})
+
+
+@app.route('/api/person-notes/<int:person_id>', methods=['GET', 'DELETE'])
+def delete_api_person_notes(person_id):
+    person = PersonNotes.query.filter(PersonNotes.person_id == person_id).one()
+    if request.method == 'DELETE':
+        person.delete()
+        return jsonify({'success': True})
+    if request.method == 'GET':
+        return jsonify(person.to_json())
+
+
+@app.route('/api/person-work', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def api_person_work():
+    if request.method == 'POST':
+        input_json = request.get_json()
+        person_work = json_to_work(input_json)
+        if 'unique_id' in input_json:
+            person_work.person_id = input_json.get('person_id')
+            person_work.paid_by = input_json.get('paid_by')
+            person_work.description = input_json.get('description')
+            person_work.injuries = input_json.get('injuries')
+            person_work.percent_fault = input_json.get('percent_fault')
+            person_work.date_occurred = input_json.get('date_occurred')
+            person_work.update()
+            return jsonify({'success': True})
 
 
 @app.route('/api/person-driving-violation', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -152,7 +196,7 @@ def api_person_driving_violation():
             person_driving_violation.percent_fault = input_json.get('percent_fault')
             person_driving_violation.date_occurred = input_json.get('date_occurred')
             person_driving_violation.update()
-        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        return jsonify({'success': True})
 
 
 @app.route('/api/person', methods=['GET', 'POST', 'PUT', 'DELETE'])
@@ -186,7 +230,7 @@ def api_person():
                 requests.post('/api/person-note', json=jsonify(input_json['note'][0]))
             if input_json.get('work'):
                 requests.post('/api/person-work', json=jsonify(input_json['work'][0]))
-        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
+        return jsonify({'success': True})
     elif request.method == 'GET':
         page = 1
         everyone = Person.query
