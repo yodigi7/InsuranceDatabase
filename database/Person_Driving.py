@@ -36,6 +36,7 @@ class PersonDrivingAccident(db.Model):
     unique_id = db.Column(db.Integer(), primary_key=True)
     person_id = db.Column(db.Integer(), db.ForeignKey('people.unique_id'))
     percent_fault = db.Column(db.Numeric(3))
+    date_occurred = db.Column(db.Date())
     injuries = db.Column(db.Integer())
     description = db.Column(db.Text())
     paid_by = db.Column(db.String(70))
