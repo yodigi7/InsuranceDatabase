@@ -31,9 +31,9 @@
             </div>
           </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        <form method="POST" class="form-inline my-2 my-lg-0" action="/search-general-person">
+          <input id="input" name="input" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+          <button id="search" name="search" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
       </div>
     </nav>
@@ -60,6 +60,9 @@
             <h3>Our Sidebar</h3>
             <p class='text-muted'>You can put any information here you'd like.
               <ul class="list-group">
+                <li class="list-group-item list-group-item-dark">
+                    People
+                </li>
                 <a href="/all-people" type="button" class="list-group-item list-group-item-light btn btn-primary">All People</a>
                 <a href="/add-basic-person" type="button" class="list-group-item list-group-item-light btn btn-primary">Add Person</a>
               </ul>

@@ -5,6 +5,7 @@ from database.Person import Person
 from database.flask_db import app
 from frontend.forms.add_basic_person import AddBasicPersonForm
 from frontend.forms.get_person import GetBasicPersonForm
+from frontend.forms.search_general_person import SearchGeneralPersonForm
 from frontend.forms.search_person import SearchPersonForm
 
 
@@ -26,6 +27,14 @@ def all_people():
 def find_people(unique_ids: list):
     persons = list(Person.query.filter(Person.unique_id.in_(unique_ids)))
     return render_template('find_people_results.html', title='All People', persons=persons)
+
+
+@app.route('/search-general-person', methods=['GET', 'POST'])
+def search_general():
+    form = SearchGeneralPersonForm()
+    if request.method == 'POST':
+        print(form.input.data)
+        return redirect(url_for('find_people', unique_ids=get_general_people_like(form.input.data)))
 
 
 @app.route('/search-person', methods=['GET', 'POST'])
@@ -91,24 +100,36 @@ def add_basic_person():
     return render_template('add_basic_person.html', title='Adding a Person', form=form)
 
 
+def get_general_people_like(inp: str) -> list:
+    return_list = [x for x in Person.query.filter(Person.prefix.ilike('%{}%'.format(inp)))]
+    return_list += [x for x in Person.query.filter(Person.first_name.ilike('%{}%'.format(inp))) if x not in return_list]
+    return_list += [x for x in Person.query.filter(Person.middle_name.ilike('%{}%'.format(inp))) if x not in return_list]
+    return_list += [x for x in Person.query.filter(Person.last_name.ilike('%{}%'.format(inp))) if x not in return_list]
+    return_list += [x for x in Person.query.filter(Person.suffix.ilike('%{}%'.format(inp))) if x not in return_list]
+    return_list += [x for x in Person.query.filter(Person.address.ilike('%{}%'.format(inp))) if x not in return_list]
+    return_list += [x for x in Person.query.filter(Person.mailing_address.ilike('%{}%'.format(inp))) if x not in return_list]
+    return_list += [x for x in Person.query.filter(Person.birth_date.ilike('%{}%'.format(inp))) if x not in return_list]
+    return [x.unique_id for x in return_list]
+
+
 def get_people_like(form) -> list:
     query = Person.query
     if form.prefix.data:
-        query = query.filter(Person.prefix.like(form.prefix.data))
+        query = query.filter(Person.prefix.ilike('%{}%'.format(form.prefix.data)))
     if form.first_name.data:
-        query = query.filter(Person.first_name.like(form.first_name.data))
+        query = query.filter(Person.first_name.ilike('%{}%'.format(form.first_name.data)))
     if form.middle_name.data:
-        query = query.filter(Person.middle_name.like(form.middle_name.data))
+        query = query.filter(Person.middle_name.ilike('%{}%'.format(form.middle_name.data)))
     if form.last_name.data:
-        query = query.filter(Person.last_name.like(form.last_name.data))
+        query = query.filter(Person.last_name.ilike('%{}%'.format(form.last_name.data)))
     if form.suffix.data:
-        query = query.filter(Person.suffix.like(form.suffix.data))
+        query = query.filter(Person.suffix.ilike('%{}%'.format(form.suffix.data)))
     if form.address.data:
-        query = query.filter(Person.address.like(form.address.data))
+        query = query.filter(Person.address.ilike('%{}%'.format(form.address.data)))
     if form.mailing_address.data:
-        query = query.filter(Person.mailing_address.like(form.mailing_address.data))
+        query = query.filter(Person.mailing_address.ilike('%{}%'.format(form.mailing_address.data)))
     if form.birth_date.data:
-        query = query.filter(Person.birth_date.like(form.birth_date.data))
+        query = query.filter(Person.birth_date.ilike('%{}%'.format(form.birth_date.data)))
     if form.is_prospect.data:
         query = query.filter(Person.is_prospect == form.is_prospect.data)
     return query.all()
