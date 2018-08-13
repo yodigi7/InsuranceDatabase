@@ -29,6 +29,15 @@ class PersonDrivingViolation(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def to_json(self) -> dict:
+        return {
+            'unique_id': self.unique_id,
+            'person_id': self.person_id,
+            'date_received': self.date_received,
+            'date_convicted': self.date_convicted,
+            'type': self.type
+        }
+
 
 class PersonDrivingAccident(db.Model):
     __tablename__ = 'person_driving_accident'
@@ -59,6 +68,17 @@ class PersonDrivingAccident(db.Model):
     def delete(self) -> None:
         db.session.delete(self)
         db.session.commit()
+
+    def to_json(self) -> dict:
+        return {
+            'unique_id': self.unique_id,
+            'person_id': self.person_id,
+            'date_occurred': self.date_occurred,
+            'percent_fault': self.percent_fault,
+            'injuries': self.injuries,
+            'description': self.description,
+            'paid_by': self.paid_by
+        }
 
 
 if __name__ == '__main__':

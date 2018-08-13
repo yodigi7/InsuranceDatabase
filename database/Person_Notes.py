@@ -2,19 +2,20 @@ from database.flask_db import db
 
 
 class PersonNotes(db.Model):
-    __tablename__ = 'people_notes'
+    __tablename__ = 'people_note'
 
     person_id = db.Column(db.Integer, db.ForeignKey('people.unique_id'), primary_key=True)
-    notes = db.Column(db.Text())
+    note = db.Column(db.Text())
     person = db.relationship('Person', backref='notes')
 
     def __str__(self):
-        return 'Person(person_id={}, notes={}'.format(self.person_id, self.notes)
+        return 'Person(person_id={}, note={}'.format(self.person_id, self.note)
 
     def __repr__(self):
         return str(self)
 
-    def update(self) -> None:
+    @staticmethod
+    def update() -> None:
         db.session.commit()
 
     def add(self) -> None:
@@ -24,6 +25,12 @@ class PersonNotes(db.Model):
     def delete(self) -> None:
         db.session.delete(self)
         db.session.commit()
+
+    def to_json(self) -> dict:
+        return {
+            'person_id': self.person_id,
+            'note': self.note
+        }
 
 
 if __name__ == '__main__':

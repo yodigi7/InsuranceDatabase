@@ -16,6 +16,16 @@ class PersonWork(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def to_json(self) -> dict:
+        return {
+            'person_id': self.person_id,
+            'occupation': self.occupation,
+            'occupation_start': self.occupation_start,
+            'employer': self.employer,
+            'employer_start': self.employer_start,
+            'level_of_education': self.level_of_education
+        }
+
 
 if __name__ == '__main__':
     pass

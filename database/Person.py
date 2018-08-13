@@ -33,6 +33,28 @@ class Person(db.Model):
     def __repr__(self):
         return str(self)
 
+    def to_json(self):
+        return {
+            'unique_id': self.unique_id,
+            'prefix': self.prefix,
+            'first_name': self.first_name,
+            'middle_name': self.middle_name,
+            'last_name': self.last_name,
+            'suffix': self.suffix,
+            'address': self.address,
+            'mailing_address': self.mailing_address,
+            'birth_date': self.birth_date,
+            'height': self.height,
+            'weight': self.weight,
+            'social_security_number': self.social_security_number,
+            'is_prospect': self.is_prospect,
+            'can_use_credit_score': self.can_use_credit_score,
+            'notes': [x.to_json for x in self.notes],
+            'work': [x.to_json for x in self.work],
+            'driving_violations': [x.to_json for x in self.driving_violations],
+            'driving_accidents': [x.to_json for x in self.driving_accidents]
+        }
+
     @staticmethod
     def update() -> None:
         db.session.commit()
