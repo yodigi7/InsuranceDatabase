@@ -114,8 +114,10 @@ def create_person(dictionary: dict) -> Person:
 
 
 def json_to_person(input_json: dict) -> Person:
-    if 'unique_id' in input_json.keys():
+    print(Person.query.filter(Person.unique_id == input_json['unique_id']).one_or_none())
+    if Person.query.filter(Person.unique_id == input_json['unique_id']).one_or_none():
         return Person.query.filter(Person.unique_id == input_json['unique_id']).one()
+    print(input_json['driving_accidents'])
     person = create_person(input_json)
     person.add()
     return person

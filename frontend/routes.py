@@ -126,13 +126,14 @@ def add_basic_person():
 def api_person_driving_accident():
     if request.method == 'POST':
         input_json = json.loads(request.get_json())
-        person_driving_accident = json_to_
+        # person_driving_accident = json_to_
 
 
 @app.route('/api/person', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def api_person():
     if request.method == 'POST':
-        input_json = json.loads(request.get_json())
+        print(request.get_json())
+        input_json = request.get_json()
         person = json_to_person(input_json)
         if 'unique_id' in input_json:
             person.prefix = input_json['prefix']
@@ -145,18 +146,21 @@ def api_person():
             person.birth_date = input_json['birth_date']
             person.height = input_json['height']
             person.weight = input_json['weight']
-            person.is_prospect = input_json['is_prospect ']
-            person.social_security_number = input_json['social_security_number ']
+            person.is_prospect = input_json['is_prospect']
+            person.social_security_number = input_json['social_security_number']
             person.can_use_credit_score = input_json['can_use_credit_score']
             person.update()
-            for driving_accident in input_json['driving_accidents'].values():
-                requests.post('/api/person-driving-accident', json=jsonify(driving_accident))
-            for driving_violation in input_json['driving_violations'].values():
-                requests.post('/api/person-driving-violation', json=jsonify(driving_violation))
+            if input_json['driving_accidents']:
+                for driving_accident in input_json['driving_accidents'].values():
+                    requests.post('/api/person-driving-accident', json=jsonify(driving_accident))
+            if input_json['driving_violations']:
+                for driving_violation in input_json['driving_violations'].values():
+                    requests.post('/api/person-driving-violation', json=jsonify(driving_violation))
             if input_json['note']:
                 requests.post('/api/person-note', json=jsonify(input_json['note'][0]))
             if input_json['work']:
                 requests.post('/api/person-work', json=jsonify(input_json['work'][0]))
+        return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
     elif request.method == 'GET':
         page = 1
         everyone = Person.query
