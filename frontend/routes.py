@@ -1,10 +1,7 @@
 from flask import render_template, flash, redirect, url_for, request
 from sqlalchemy import or_
-from sqlalchemy.orm import load_only
 
 from database.Person import Person
-from database.Person_Driving import PersonDrivingAccident
-
 from database.flask_db import app
 from frontend.forms.add_basic_person import AddBasicPersonForm
 from frontend.forms.add_person import AddPersonForm
@@ -16,8 +13,6 @@ from frontend.forms.search_person import SearchPersonForm
 @app.route('/')
 @app.route('/home')
 def home():
-    if request.args:
-        print(request.args)
     return render_template('default.html', title='Home')
 
 
@@ -37,7 +32,6 @@ def find_people(unique_ids: list):
 def search_general():
     form = SearchGeneralPersonForm()
     if request.method == 'POST':
-        print(form.input.data)
         return redirect(url_for('find_people', unique_ids=get_general_people_like(form.input.data)))
 
 
@@ -48,11 +42,9 @@ def search_person():
         if not form.prefix.data and not form.first_name.data and not form.middle_name.data and \
                 not form.last_name.data and not form.suffix.data and not form.address.data and \
                 not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
-            print('To all people')
             return redirect(url_for('all_people'))
         else:
             unique_ids = [x.unique_id for x in get_people_like(form)]
-            # print(unique_ids)
             if unique_ids:
                 return redirect(url_for('find_people', unique_ids=unique_ids))
             else:
@@ -68,14 +60,12 @@ def get_person(unique_id):
     if 'update_btn' in request.form and form.validate_on_submit():
         form.populate_obj(person)
         person.update()
-        print("updated")
         flash('Person updated', 'success')
     elif 'delete' in request.form:
         person.delete()
         flash('Person deleted', 'success')
         return redirect(url_for('all_people'))
     elif form.is_submitted():
-        print('error')
         for item in form.errors.items():
             flash(item, 'danger')
     return render_template('get_person.html', title='Get Person {}'.format(unique_id), person=person, form=form)
