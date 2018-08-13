@@ -1,1 +1,1 @@
-py create_tables.py
+cmd /k "cd /d .\env\Scripts & activate & cd /d    ../.. & py create_tables.py"
