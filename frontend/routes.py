@@ -32,7 +32,7 @@ def find_people(unique_ids: list):
 def search_general():
     form = SearchGeneralPersonForm()
     if request.method == 'POST':
-        return redirect(url_for('find_people', unique_ids=get_general_people_like(form.input.data)))
+        return redirect(url_for('find_people', unique_ids=get_general_people_like_or(form.input.data)))
 
 
 @app.route('/search-person', methods=['GET', 'POST'])
@@ -44,7 +44,7 @@ def search_person():
                 not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
             return redirect(url_for('all_people'))
         else:
-            unique_ids = [x.unique_id for x in get_people_like(form)]
+            unique_ids = [x.unique_id for x in get_people_like_and(form)]
             if unique_ids:
                 return redirect(url_for('find_people', unique_ids=unique_ids))
             else:
@@ -119,7 +119,7 @@ def add_basic_person():
     return render_template('add_basic_person.html', title='Adding a Person', form=form)
 
 
-def get_general_people_like(inp: str) -> list:
+def get_general_people_like_or(inp: str) -> list:
     return [x.unique_id for x in Person.query.filter(or_(Person.prefix.ilike('%{}%'.format(inp)),
                                                          Person.first_name.ilike('%{}%'.format(inp)),
                                                          Person.middle_name.ilike('%{}%'.format(inp)),
@@ -134,7 +134,7 @@ def get_general_people_like(inp: str) -> list:
                                                              '%{}%'.format(inp)))).all()]
 
 
-def get_people_like(form) -> list:
+def get_people_like_and(form) -> list:
     query = Person.query
     if form.prefix.data:
         query = query.filter(Person.prefix.ilike('%{}%'.format(form.prefix.data)))
