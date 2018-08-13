@@ -19,7 +19,7 @@ def home():
 @app.route('/all-people')
 def all_people():
     persons = list(Person.query.all())
-    return render_template('all_people_results.html', title='All People', persons=persons)
+    return render_template('find_people_results.html', title='All People', persons=persons)
 
 
 @app.route('/find-people/<list:unique_ids>')
@@ -32,7 +32,18 @@ def find_people(unique_ids: list):
 def search_person():
     form = SearchPersonForm()
     if request.method == 'POST':
-        pass
+        if not form.prefix.data and not form.first_name.data and not form.middle_name.data and \
+           not form.last_name.data and not form.suffix.data and not form.address.data and \
+           not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
+            print('To all people')
+            return redirect(url_for('all_people'))
+        else:
+            unique_ids = [x.unique_id for x in get_people_like(form)]
+            # print(unique_ids)
+            if unique_ids:
+                return redirect(url_for('find_people', unique_ids=unique_ids))
+            else:
+                flash("Sorry there were no people found like that", 'warning')
     return render_template('search_person.html', title='Search Person', form=form)
 
 
@@ -41,19 +52,21 @@ def get_person(unique_id):
     person = Person.query.get_or_404(unique_id)
     form = GetBasicPersonForm(obj=person)
     form.first_name.default = person.first_name
-    if 'update' in request.form and form.validate_on_submit():
+    if 'update_btn' in request.form and form.validate_on_submit():
         form.populate_obj(person)
         person.update()
+        print("updated")
         flash('Person updated', 'success')
     elif 'delete' in request.form:
         person.delete()
         flash('Person deleted', 'success')
         return redirect(url_for('all_people'))
     elif form.is_submitted():
+        print('error')
         for item in form.errors.items():
             flash(item, 'danger')
-    return find_people([1, 2, 3])
-    # return render_template('get_person.html', title='Get Person {}'.format(unique_id), person=person, form=form)
+    # return find_people([1, 2, 3])
+    return render_template('get_person.html', title='Get Person {}'.format(unique_id), person=person, form=form)
 
 
 @app.route('/add-basic-person', methods=['GET', 'POST'])
@@ -76,6 +89,29 @@ def add_basic_person():
             flash(item, 'danger')
             return redirect(url_for('add_basic_person'))
     return render_template('add_basic_person.html', title='Adding a Person', form=form)
+
+
+def get_people_like(form) -> list:
+    query = Person.query
+    if form.prefix.data:
+        query = query.filter(Person.prefix.like(form.prefix.data))
+    if form.first_name.data:
+        query = query.filter(Person.first_name.like(form.first_name.data))
+    if form.middle_name.data:
+        query = query.filter(Person.middle_name.like(form.middle_name.data))
+    if form.last_name.data:
+        query = query.filter(Person.last_name.like(form.last_name.data))
+    if form.suffix.data:
+        query = query.filter(Person.suffix.like(form.suffix.data))
+    if form.address.data:
+        query = query.filter(Person.address.like(form.address.data))
+    if form.mailing_address.data:
+        query = query.filter(Person.mailing_address.like(form.mailing_address.data))
+    if form.birth_date.data:
+        query = query.filter(Person.birth_date.like(form.birth_date.data))
+    if form.is_prospect.data:
+        query = query.filter(Person.is_prospect == form.is_prospect.data)
+    return query.all()
 
 
 if __name__ == '__main__':

@@ -7,5 +7,8 @@ class ListConverter(BaseConverter):
         return value.split('+')
 
     def to_url(self, values):
-        return '+'.join(BaseConverter.to_url(value)
+        print(values)
+        if len(values) is 1:
+            return BaseConverter.to_url(self, values[0])
+        return '+'.join(BaseConverter.to_url(self, value)
                         for value in values)
