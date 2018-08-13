@@ -85,8 +85,8 @@ def add_person():
                birth_date=form.birth_date.data,
                is_prospect=form.is_prospect.data,
                social_security_number=form.social_security.data,
-               height=str(form.height.data),
-               weight=str(form.weight.data),
+               height=form.height.data,
+               weight=form.weight.data,
                can_use_credit_score=form.can_use_credit_score.data).add()
         flash('Person saved', 'success')
         return redirect(url_for('all_people'))
