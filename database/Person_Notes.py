@@ -30,5 +30,14 @@ class PersonNotes(db.Model):
         return self.note
 
 
+def json_to_note(input_json: dict) -> PersonNotes:
+    query = PersonNotes.query.filter(PersonNotes.person_id == input_json['person_id'])
+    if query.one_or_none():
+        return query.one()
+    person_notes = PersonNotes(person_id=input_json['person_id'], note=input_json['note'])
+    person_notes.add()
+    return person_notes
+
+
 if __name__ == '__main__':
     pass

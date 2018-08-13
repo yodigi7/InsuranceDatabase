@@ -11,7 +11,7 @@ class PersonDrivingViolation(db.Model):
     type = db.Column(db.Text())
 
     def __str__(self):
-        return 'Person(unique_id={}, person_id={}, date_received={}, date_convicted={}, type={}'\
+        return 'Person(unique_id={}, person_id={}, date_received={}, date_convicted={}, type={}' \
             .format(self.unique_id, self.person_id, self.date_received, self.date_convicted, self.type)
 
     def __repr__(self):
@@ -51,7 +51,7 @@ class PersonDrivingAccident(db.Model):
     paid_by = db.Column(db.String(70))
 
     def __str__(self):
-        return 'Person(unique_id={}, person_id={}, date_received={}, date_convicted={}, type={}'\
+        return 'Person(unique_id={}, person_id={}, date_received={}, date_convicted={}, type={}' \
             .format(self.unique_id, self.person_id, self.date_received, self.date_convicted, self.type)
 
     def __repr__(self):
@@ -79,6 +79,34 @@ class PersonDrivingAccident(db.Model):
             'description': self.description,
             'paid_by': self.paid_by
         }
+
+
+def json_to_accident(input_json: dict) -> PersonDrivingAccident:
+    query = PersonDrivingAccident.query.filter(PersonDrivingAccident.unique_id == input_json['unique_id'])
+    if query.one_or_none():
+        return query.one()
+    person_driving_accident = PersonDrivingAccident(unique_id=input_json.get('unique_id'),
+                                                    person_id=input_json.get('unique_id'),
+                                                    date_occurred=input_json.get('date_occurred'),
+                                                    percent_fault=input_json.get('percent_fault'),
+                                                    injuries=input_json.get('injuries'),
+                                                    description=input_json.get('description'),
+                                                    paid_by=input_json.get('paid_by'))
+    person_driving_accident.add()
+    return person_driving_accident
+
+
+def json_to_violation(input_json: dict) -> PersonDrivingViolation:
+    query = PersonDrivingViolation.query.filter(PersonDrivingViolation.unique_id == input_json['unique_id'])
+    if query.one_or_none():
+        return query.one()
+    person_driving_violation = PersonDrivingViolation(unique_id=input_json.get('unique_id'),
+                                                      person_id=input_json.get('person_id'),
+                                                      date_received=input_json.get('date_received'),
+                                                      date_convicted=input_json.get('date_convicted'),
+                                                      type=input_json.get('type'))
+    person_driving_violation.add()
+    return person_driving_violation
 
 
 if __name__ == '__main__':

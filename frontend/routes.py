@@ -1,8 +1,10 @@
-from flask import render_template, flash, redirect, url_for, request
+from math import ceil
+
+import requests
+from flask import render_template, flash, redirect, url_for, request, jsonify, json
 from sqlalchemy import or_
 
-from database.Person import Person
-from database.Person_Notes import PersonNotes
+from database.Person import Person, json_to_person
 from database.flask_db import app
 from frontend.forms.add_basic_person import AddBasicPersonForm
 from frontend.forms.add_person import AddPersonForm
@@ -118,6 +120,54 @@ def add_basic_person():
             flash(item, 'danger')
             return redirect(url_for('add_basic_person'))
     return render_template('add_basic_person.html', title='Adding a Person', form=form)
+
+
+@app.route('/api/person-driving-accident', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def api_person_driving_accident():
+    if request.method == 'POST':
+        input_json = json.loads(request.get_json())
+        person_driving_accident = json_to_
+
+
+@app.route('/api/person', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def api_person():
+    if request.method == 'POST':
+        input_json = json.loads(request.get_json())
+        person = json_to_person(input_json)
+        if 'unique_id' in input_json:
+            person.prefix = input_json['prefix']
+            person.first_name = input_json['first_name']
+            person.middle_name = input_json['middle_name']
+            person.last_name = input_json['last_name']
+            person.suffix = input_json['suffix']
+            person.address = input_json['address']
+            person.mailing_address = input_json['mailing_address']
+            person.birth_date = input_json['birth_date']
+            person.height = input_json['height']
+            person.weight = input_json['weight']
+            person.is_prospect = input_json['is_prospect ']
+            person.social_security_number = input_json['social_security_number ']
+            person.can_use_credit_score = input_json['can_use_credit_score']
+            person.update()
+            for driving_accident in input_json['driving_accidents'].values():
+                requests.post('/api/person-driving-accident', json=jsonify(driving_accident))
+            for driving_violation in input_json['driving_violations'].values():
+                requests.post('/api/person-driving-violation', json=jsonify(driving_violation))
+            if input_json['note']:
+                requests.post('/api/person-note', json=jsonify(input_json['note'][0]))
+            if input_json['work']:
+                requests.post('/api/person-work', json=jsonify(input_json['work'][0]))
+    elif request.method == 'GET':
+        page = 1
+        everyone = Person.query
+        total_pages = ceil(everyone.count()/20)
+        if 'page' in request.args:
+            page = int(request.args['page'])
+        return_people = {
+            'people': [x.to_json() for x in everyone.paginate(page, 20, False).items],
+            'pages': total_pages
+        }
+        return jsonify(return_people)
 
 
 def get_general_people_like_or(inp: str) -> list:

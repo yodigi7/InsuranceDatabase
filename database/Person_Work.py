@@ -27,5 +27,17 @@ class PersonWork(db.Model):
         }
 
 
+def json_to_work(input_json: dict) -> PersonWork:
+    query = PersonWork.query.filter(PersonWork.person_id == input_json['person_id'])
+    if query.one_or_none():
+        return query.one()
+    person_work = PersonWork(person_id=input_json['person_id'], occupation=input_json['occupation'],
+                             occupation_start=input_json['occupation_start'], employer=input_json['employer'],
+                             employer_start=input_json['employer_start'],
+                             level_of_education=input_json['level_of_education'])
+    person_work.add()
+    return person_work
+
+
 if __name__ == '__main__':
     pass
