@@ -19,7 +19,7 @@ class Person(db.Model):
     address = db.Column(db.String(70))
     mailing_address = db.Column(db.String(70))
     birth_date = db.Column(db.Date())
-    height = db.Column(db.String(4))
+    height = db.Column(db.String(6))
     weight = db.Column(db.String(4))
     social_security_number = db.Column(db.Integer())
     is_prospect = db.Column(db.Boolean())
