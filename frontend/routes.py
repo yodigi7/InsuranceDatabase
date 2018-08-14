@@ -307,7 +307,7 @@ def api_person_id(unique_id: int):
         person.birth_date = input_json.get('birth_date')
         person.height = input_json.get('height')
         person.weight = input_json.get('weight')
-        person.is_prospect = input_json.get('is_prospect')
+        person.customer_type = input_json.get('customer_type')
         person.social_security_number = input_json.get('social_security_number')
         person.can_use_credit_score = input_json.get('can_use_credit_score')
         person.update()

@@ -22,7 +22,7 @@ class Person(db.Model):
     height = db.Column(db.String(6))
     weight = db.Column(db.String(4))
     social_security_number = db.Column(db.Integer())
-    is_prospect = db.Column(db.Boolean())
+    customer_typ = db.Column(db.String(20))
     can_use_credit_score = db.Column(db.Boolean())
 
     note = db.relationship('PersonNotes', backref='person', cascade='delete, delete-orphan')
