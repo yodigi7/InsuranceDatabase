@@ -75,45 +75,33 @@ class Person(db.Model):
 
 def create_person(dictionary: dict) -> Person:
     if 'unique_id' in dictionary.keys():
-        return Person(unique_id=dictionary.get('unique_id'),
+        return Person(unique_id=dictionary.get('uniqueId'),
                       prefix=dictionary.get('prefix'),
-                      first_name=dictionary.get('first_name'),
-                      middle_name=dictionary.get('middle_name'),
-                      last_name=dictionary.get('last_name'),
+                      first_name=dictionary.get('firstName'),
+                      middle_name=dictionary.get('middleName'),
+                      last_name=dictionary.get('lastName'),
                       suffix=dictionary.get('suffix'),
                       address=dictionary.get('address'),
-                      mailing_address=dictionary.get('mailing_address'),
-                      birth_date=dictionary.get('birth_date'),
+                      mailing_address=dictionary.get('mailingAddress'),
+                      birth_date=dictionary.get('birthDate'),
                       height=dictionary.get('height'),
                       weight=dictionary.get('weight'),
-                      social_security_number=dictionary.get('social_security_number'),
-                      is_prospect=dictionary.get('is_prospect'),
-                      can_use_credit_score=dictionary.get('can_use_credit_score'),
-                      note=[x.Person_Notes.json_to_note() for x in dictionary.get('note')],
-                      work=[x.Person_Work.json_to_work() for x in dictionary.get('work')],
-                      driving_accidents=[Person_Driving.json_to_accident(x) for x in
-                                         dictionary.get('driving_accidents')],
-                      driving_violations=[Person_Driving.json_to_violation(x) for x in
-                                          dictionary.get('driving_violations')])
+                      social_security_number=dictionary.get('socialSecurityNumber'),
+                      customer_type=dictionary.get('customerType'),
+                      can_use_credit_score=dictionary.get('canUseCreditScore'))
     return Person(prefix=dictionary.get('prefix'),
-                  first_name=dictionary.get('first_name'),
-                  middle_name=dictionary.get('middle_name'),
-                  last_name=dictionary.get('last_name'),
+                  first_name=dictionary.get('firstName'),
+                  middle_name=dictionary.get('middleName'),
+                  last_name=dictionary.get('lastName'),
                   suffix=dictionary.get('suffix'),
                   address=dictionary.get('address'),
-                  mailing_address=dictionary.get('mailing_address'),
-                  birth_date=dictionary.get('birth_date'),
+                  mailing_address=dictionary.get('mailingAddress'),
+                  birth_date=dictionary.get('birthDate'),
                   height=dictionary.get('height'),
                   weight=dictionary.get('weight'),
-                  social_security_number=dictionary.get('social_security_number'),
-                  is_prospect=dictionary.get('is_prospect'),
-                  can_use_credit_score=dictionary.get('can_use_credit_score'),
-                  note=[x.Person_Notes.json_to_note() for x in dictionary.get('note')],
-                  work=[x.Person_Work.json_to_work() for x in dictionary.get('work')],
-                  driving_accidents=[Person_Driving.json_to_accident(x) for x in
-                                     dictionary.get('driving_accidents')],
-                  driving_violations=[Person_Driving.json_to_violation(x) for x in
-                                      dictionary.get('driving_violations')])
+                  social_security_number=dictionary.get('socialSecurityNumber'),
+                  customer_type=dictionary.get('customerType'),
+                  can_use_credit_score=dictionary.get('canUseCreditScore'))
 
 
 def json_to_person(input_json: dict) -> Person:
