@@ -279,7 +279,7 @@ def api_person_driving_violation_id(unique_id: int):
 @cross_origin()
 def api_person():
     if request.method == 'POST':
-        print(request.get_json())
+        print(request.get_json()['birthDate'])
         input_json = request.get_json()
         json_to_person(input_json).add()
         return jsonify({'success': True})
@@ -327,6 +327,7 @@ def api_person_id(unique_id: int):
             requests.put('/api/person-work', json=jsonify(input_json['work'][0]))
         return jsonify({'success': True})
     elif request.method == 'GET':
+        print(person.to_json()['birth_date'])
         return jsonify(person.to_json())
     elif request.method == 'DELETE':
         person.delete()

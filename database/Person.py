@@ -22,7 +22,7 @@ class Person(db.Model):
     suffix = db.Column(db.String(20))
     address = db.Column(db.String(70))
     mailing_address = db.Column(db.String(70))
-    birth_date = db.Column(db.Date())
+    birth_date = db.Column(db.String(12))
     height = db.Column(db.String(6))
     weight = db.Column(db.String(4))
     social_security_number = db.Column(db.Integer())
@@ -81,7 +81,7 @@ def create_person(dictionary: dict) -> Person:
     dictionary['weight'] = str(dictionary.get('weight'))
     dictionary['socialSecurityNumber'] = dictionary.get('socialSecurityNumber')
     if dictionary.get('birthDate'):
-        dictionary['birthDate'] = datetime.datetime.strptime(dictionary.get('birthDate'), '%Y-%m-%d').date()
+        dictionary['birthDate'] = dictionary.get('birthDate')
     else:
         dictionary['birthDate'] = None
     return Person(prefix=dictionary.get('prefix'),
@@ -91,7 +91,7 @@ def create_person(dictionary: dict) -> Person:
                   suffix=dictionary.get('suffix'),
                   address=dictionary.get('address'),
                   mailing_address=dictionary.get('mailingAddress'),
-                  birth_date=None,
+                  birth_date=dictionary.get('birthDate'),
                   height=dictionary.get('height'),
                   weight=dictionary.get('weight'),
                   social_security_number=dictionary.get('socialSecurityNumber'),

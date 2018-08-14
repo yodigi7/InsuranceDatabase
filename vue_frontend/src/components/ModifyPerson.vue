@@ -1,14 +1,14 @@
 <template>
   <div class="container">
-    <form method="POST" @submit.prevent="addPerson">
+    <form method="POST" @submit.prevent="modifyPerson">
       <fieldset class="form-group">
-        <legend class="border-bottom mb-4">Add a Person</legend>
+        <legend class="border-bottom mb-4">Modify a Person</legend>
         <div class="row">
           <Person ref="person"></Person>
         </div>
       </fieldset>
       <div class="form-group float-left">
-        <button class="btn btn-info">Submit</button>
+        <button class="btn btn-info">Modify</button>
       </div>
     </form>
   </div>
@@ -17,11 +17,14 @@
 <script>
 import Person from './Person'
 export default {
-  name: 'AddPerson',
+  name: 'ModifyPerson',
   components: {Person},
+  mounted: function () {
+    this.$refs.person.load(this.$route.params.id)
+  },
   methods: {
-    addPerson () {
-      this.$refs.person.add()
+    modifyPerson () {
+      this.$refs.person.update()
     }
   }
 }

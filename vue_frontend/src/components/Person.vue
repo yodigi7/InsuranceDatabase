@@ -113,6 +113,26 @@ export default {
           'Content-Type': 'application/json'
         }
       }).then()
+    },
+    load (id) {
+      fetch('http://localhost:5000/api/person/' + id)
+        .then(response => response.json())
+        .then(response => {
+          console.log(response)
+          this.prefix = response.prefix
+          this.firstName = response.first_name
+          this.middleName = response.middle_name
+          this.lastName = response.last_name
+          this.suffix = response.suffix
+          this.address = response.address
+          this.mailingAddress = response.mailing_address
+          this.birthDate = response.birth_date
+          this.customerType = response.customer_type
+          this.height = response.height
+          this.weight = response.weight
+          this.socialSecurityNumber = response.social_security_number
+          this.canUseCreditScore = response.can_use_credit_score
+        })
     }
   }
 }
