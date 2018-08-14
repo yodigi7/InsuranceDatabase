@@ -2,6 +2,7 @@ from math import ceil
 
 import requests
 from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask_cors import cross_origin
 from sqlalchemy import or_
 
 from database.Person import Person, json_to_person
@@ -275,6 +276,7 @@ def api_person_driving_violation_id(unique_id: int):
 
 
 @app.route('/api/person', methods=['GET', 'POST'])
+@cross_origin()
 def api_person():
     if request.method == 'POST':
         print(request.get_json())

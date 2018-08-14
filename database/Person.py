@@ -1,3 +1,7 @@
+import datetime
+
+from sqlalchemy.exc import StatementError
+
 from database import Person_Driving
 from database.flask_db import db
 import simplejson as json
@@ -22,7 +26,7 @@ class Person(db.Model):
     height = db.Column(db.String(6))
     weight = db.Column(db.String(4))
     social_security_number = db.Column(db.Integer())
-    customer_typ = db.Column(db.String(20))
+    customer_type = db.Column(db.String(20))
     can_use_credit_score = db.Column(db.Boolean())
 
     note = db.relationship('PersonNotes', backref='person', cascade='delete, delete-orphan')
@@ -64,7 +68,7 @@ class Person(db.Model):
             'height': self.height,
             'weight': self.weight,
             'social_security_number': self.social_security_number,
-            'is_prospect': self.is_prospect,
+            'customer_type': self.customer_type,
             'can_use_credit_score': self.can_use_credit_score,
             'note': [x.to_json_str() for x in self.note],
             'work': [x.to_json() for x in self.work],
@@ -74,21 +78,12 @@ class Person(db.Model):
 
 
 def create_person(dictionary: dict) -> Person:
-    if 'unique_id' in dictionary.keys():
-        return Person(unique_id=dictionary.get('uniqueId'),
-                      prefix=dictionary.get('prefix'),
-                      first_name=dictionary.get('firstName'),
-                      middle_name=dictionary.get('middleName'),
-                      last_name=dictionary.get('lastName'),
-                      suffix=dictionary.get('suffix'),
-                      address=dictionary.get('address'),
-                      mailing_address=dictionary.get('mailingAddress'),
-                      birth_date=dictionary.get('birthDate'),
-                      height=dictionary.get('height'),
-                      weight=dictionary.get('weight'),
-                      social_security_number=dictionary.get('socialSecurityNumber'),
-                      customer_type=dictionary.get('customerType'),
-                      can_use_credit_score=dictionary.get('canUseCreditScore'))
+    dictionary['weight'] = str(dictionary.get('weight'))
+    dictionary['socialSecurityNumber'] = dictionary.get('socialSecurityNumber')
+    if dictionary.get('birthDate'):
+        dictionary['birthDate'] = datetime.datetime.strptime(dictionary.get('birthDate'), '%Y-%m-%d').date()
+    else:
+        dictionary['birthDate'] = None
     return Person(prefix=dictionary.get('prefix'),
                   first_name=dictionary.get('firstName'),
                   middle_name=dictionary.get('middleName'),
@@ -96,7 +91,7 @@ def create_person(dictionary: dict) -> Person:
                   suffix=dictionary.get('suffix'),
                   address=dictionary.get('address'),
                   mailing_address=dictionary.get('mailingAddress'),
-                  birth_date=dictionary.get('birthDate'),
+                  birth_date=None,
                   height=dictionary.get('height'),
                   weight=dictionary.get('weight'),
                   social_security_number=dictionary.get('socialSecurityNumber'),
