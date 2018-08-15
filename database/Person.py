@@ -3,6 +3,7 @@ from database.flask_db import db
 from database.Person_Work import PersonWork
 from database.Person_Notes import PersonNotes
 from database.Person_Driving import PersonDrivingViolation, PersonDrivingAccident
+from database.Person_Phones import PersonPhone
 
 
 class Person(db.Model):
@@ -27,6 +28,7 @@ class Person(db.Model):
     work = db.relationship('PersonWork', backref='person', cascade='delete, delete-orphan')
     driving_violations = db.relationship('PersonDrivingViolation', backref='person', cascade='delete, delete-orphan')
     driving_accidents = db.relationship('PersonDrivingAccident', backref='person', cascade='delete, delete-orphan')
+    phones = db.relationship('PersonPhone', backref='person', cascade='delete, delete-orphan')
 
     def __str__(self):
         return 'Person(unique_id={}, first_name={}, middle_name={}, last_name={}, prefix={}, suffix={}, address={}' \

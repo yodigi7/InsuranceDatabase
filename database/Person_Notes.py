@@ -30,7 +30,7 @@ class PersonNotes(db.Model):
 
 
 def json_to_note(input_json: dict) -> PersonNotes:
-    person_notes = PersonNotes(person_id=input_json['person_id'], note=input_json['note'])
+    person_notes = PersonNotes(person_id=input_json['personId'], note=input_json['note'])
     person_notes.add()
     return person_notes
 

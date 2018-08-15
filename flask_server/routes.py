@@ -2,7 +2,6 @@ from math import ceil
 
 import requests
 from flask import render_template, flash, redirect, url_for, request, jsonify
-from flask_cors import cross_origin
 from sqlalchemy import or_
 
 from database.Person import Person, json_to_person
@@ -14,7 +13,6 @@ from flask_server.forms.add_basic_person import AddBasicPersonForm
 from flask_server.forms.add_person import AddPersonForm
 from flask_server.forms.get_person import GetBasicPersonForm
 from flask_server.forms.search_general_person import SearchGeneralPersonForm
-from flask_server.forms.search_person import SearchPersonForm
 
 
 @app.route('/')
