@@ -30,7 +30,10 @@ export default {
     addPerson () {
       this.$refs.person.add()
       this.message = 'Successfully added person'
-      console.log(this.message)
+      setTimeout(() => {
+        this.message = null
+        console.log(this.message)
+      }, 5000)
     }
   }
 }
