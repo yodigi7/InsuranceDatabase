@@ -43,7 +43,7 @@ def create_person_phone(dictionary: dict) -> PersonPhone:
                        type=dictionary.get('type'))
 
 
-def json_to_person_phone(input_json: dict) -> PersonPhone:
+def json_to_phone(input_json: dict) -> PersonPhone:
     person_phone = create_person_phone(input_json)
     return person_phone
 

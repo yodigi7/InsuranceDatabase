@@ -23,5 +23,7 @@ export default {
 }
 #router-view {
   margin-top: 2%;
+  padding-left: 0;
+  padding-right: 0;
 }
 </style>

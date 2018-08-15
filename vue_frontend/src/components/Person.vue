@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <div class="row">
       <div class="form-group col-sm-1 pr-0">
         <label class="form-control-label" for="prefix">Prefix</label>
@@ -47,7 +47,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="form-group col-5">
+      <div class="form-group col-4">
         <label class="form-control-label" for="birth_date">Birth Date</label>
         <input class="form-control form-control-sm" id="birth_date" type="date" v-model="birthDate"/>
       </div>
@@ -55,7 +55,7 @@
         <label class="form-control-label" for="social_security_number">Social Security Number</label>
         <input class="form-control form-control-sm" id="social_security_number" type="number" v-model="socialSecurityNumber"/>
       </div>
-      <div class="form-group col-sm-2">
+      <div class="form-group col-sm-3">
         <label class="form-control-label" for="customer_type">Customer Type</label>
         <select class="form-control form-control-sm" id="customer_type" v-model="customerType">
           <option>Active</option>
@@ -75,9 +75,7 @@
       </div>
       <div class="form-group col-2">
         <label class="form-control-label" for="can_use_credit_score">Can Use Credit Score</label>
-        <div class="col-4 container">
         <input class="form-control form-control-sm" id="can_use_credit_score" type="checkbox" v-model="canUseCreditScore"/>
-        </div>
       </div>
     </div>
   </div>
@@ -169,5 +167,9 @@ export default {
 </script>
 
 <style scoped>
-
+  .form-group {
+    margin-bottom: 4px;
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 </style>

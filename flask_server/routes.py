@@ -7,6 +7,7 @@ from sqlalchemy import or_
 from database.Person import Person, json_to_person
 from database.Person_Driving import json_to_accident, json_to_violation, PersonDrivingViolation, PersonDrivingAccident
 from database.Person_Notes import json_to_note, PersonNotes
+from database.Person_Phones import json_to_phone, PersonPhone
 from database.Person_Work import json_to_work, PersonWork
 from database.flask_db import app
 from flask_server.forms.add_basic_person import AddBasicPersonForm
@@ -38,23 +39,6 @@ def search_general():
     form = SearchGeneralPersonForm()
     if request.method == 'POST':
         return redirect(url_for('find_people', unique_ids=get_general_people_like_or(form.input.data)))
-
-
-# @app.route('/search-person', methods=['GET', 'POST'])
-# def search_person():
-#     form = SearchPersonForm()
-#     if request.method == 'POST':
-#         if not form.prefix.data and not form.first_name.data and not form.middle_name.data and \
-#                 not form.last_name.data and not form.suffix.data and not form.address.data and \
-#                 not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
-#             return redirect(url_for('all_people'))
-#         else:
-#             unique_ids = [x.unique_id for x in get_people_like_and(form)]
-#             if unique_ids:
-#                 return redirect(url_for('find_people', unique_ids=unique_ids))
-#             else:
-#                 flash("Sorry there were no people found like that", 'warning')
-#     return render_template('search_person.html', title='Search Person', form=form)
 
 
 @app.route('/get-person/<int:unique_id>', methods=['GET', 'POST'])
@@ -127,6 +111,40 @@ def add_basic_person():
 # API STUFF BELOW HERE
 
 
+@app.route('/api/person-phones', methods=['GET', 'POST'])
+def api_person_phones():
+    if request.method == 'POST':
+        input_json = request.get_json()
+        print(input_json)
+        json_to_phone(input_json).add()
+        return jsonify({'success': True})
+    elif request.method == 'GET':
+        page = 1
+        every = PersonNotes.query
+        if 'page' in request.args:
+            page = int(request.args['page'])
+        return jsonify({
+            'phones': [x.to_json() for x in every.paginate(page, 20, False).items],
+            'pages': (ceil(every.count() / 20))
+        })
+
+
+@app.route('/api/person-phones/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_person_phones_id(unique_id: int):
+    person_phone = PersonPhone.query.filter(PersonPhone.person_id == unique_id).one()
+    if request.method == 'DELETE':
+        person_phone.delete()
+        return jsonify({'success': True})
+    elif request.method == 'GET':
+        return jsonify(person_phone.to_json())
+    elif request.method == 'PUT':
+        input_json = request.get_json()
+        person_phone.person_id = input_json.get('person_id')
+        person_phone.phone_number = input_json.get('phoneNumber')
+        person_phone.type = input_json.get('type')
+        return jsonify({'success': True})
+
+
 @app.route('/api/person-notes', methods=['GET', 'POST'])
 def api_person_notes():
     if request.method == 'POST':
@@ -139,7 +157,7 @@ def api_person_notes():
         if 'page' in request.args:
             page = int(request.args['page'])
         return jsonify({
-            'driving_violations': [x.to_json() for x in every.paginate(page, 20, False).items],
+            'notes': [x.to_json() for x in every.paginate(page, 20, False).items],
             'pages': (ceil(every.count() / 20))
         })
 
@@ -248,7 +266,7 @@ def api_person_driving_violation():
         if 'page' in request.args:
             page = int(request.args['page'])
         return jsonify({
-            'driving_violations': [x.to_json() for x in every.paginate(page, 20, False).items],
+            'violations': [x.to_json() for x in every.paginate(page, 20, False).items],
             'pages': (ceil(every.count() / 20))
         })
 
@@ -278,8 +296,10 @@ def api_person():
     if request.method == 'POST':
         print(request.get_json()['birthDate'])
         input_json = request.get_json()
-        json_to_person(input_json).add()
-        return jsonify({'success': True})
+        person = json_to_person(input_json)
+        person.add()
+        print(person)
+        return jsonify({'success': True, 'unique_id': person.unique_id})
     elif request.method == 'GET':
         page = 1
         everyone = Person.query
