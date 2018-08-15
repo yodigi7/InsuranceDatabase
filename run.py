@@ -1,4 +1,4 @@
-from frontend import routes
+from flask_server import routes
 from database.flask_db import app
 
 

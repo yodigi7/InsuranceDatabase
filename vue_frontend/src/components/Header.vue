@@ -17,7 +17,7 @@
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <router-link to="/add-person" class="dropdown-item">Add</router-link>
             <router-link to="/list-people/1" class="dropdown-item">All</router-link>
-            <router-link to="/search-person" class="dropdown-item">Search</router-link>
+            <router-link to="/search-people" class="dropdown-item">Search</router-link>
           </div>
         </li>
       </ul>

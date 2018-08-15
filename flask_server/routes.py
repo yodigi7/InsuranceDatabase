@@ -10,11 +10,11 @@ from database.Person_Driving import json_to_accident, json_to_violation, PersonD
 from database.Person_Notes import json_to_note, PersonNotes
 from database.Person_Work import json_to_work, PersonWork
 from database.flask_db import app
-from frontend.forms.add_basic_person import AddBasicPersonForm
-from frontend.forms.add_person import AddPersonForm
-from frontend.forms.get_person import GetBasicPersonForm
-from frontend.forms.search_general_person import SearchGeneralPersonForm
-from frontend.forms.search_person import SearchPersonForm
+from flask_server.forms.add_basic_person import AddBasicPersonForm
+from flask_server.forms.add_person import AddPersonForm
+from flask_server.forms.get_person import GetBasicPersonForm
+from flask_server.forms.search_general_person import SearchGeneralPersonForm
+from flask_server.forms.search_person import SearchPersonForm
 
 
 @app.route('/')
@@ -365,24 +365,24 @@ def get_general_people_like_or(inp: str) -> list:
 def get_people_like_and(input_json) -> list:
     query = Person.query
     print(input_json)
-    if 'prefix' in input_json.keys():
+    if input_json['prefix']:
         query = query.filter(Person.prefix.ilike('%{}%'.format(input_json['prefix'])))
-    if 'first_name' in input_json.keys():
-        query = query.filter(Person.first_name.ilike('%{}%'.format(input_json['first_name'])))
-    if 'middle_name' in input_json.keys():
-        query = query.filter(Person.middle_name.ilike('%{}%'.format(input_json['middle_name'])))
-    if 'last_name' in input_json.keys():
-        query = query.filter(Person.last_name.ilike('%{}%'.format(input_json['last_name'])))
-    if 'suffix' in input_json.keys():
+    if input_json['firstName']:
+        query = query.filter(Person.first_name.ilike('%{}%'.format(input_json['firstName'])))
+    if input_json['middleName']:
+        query = query.filter(Person.middle_name.ilike('%{}%'.format(input_json['middleName'])))
+    if input_json['lastName']:
+        query = query.filter(Person.last_name.ilike('%{}%'.format(input_json['lastName'])))
+    if input_json['suffix']:
         query = query.filter(Person.suffix.ilike('%{}%'.format(input_json['suffix'])))
-    if 'address' in input_json.keys():
+    if input_json['address']:
         query = query.filter(Person.address.ilike('%{}%'.format(input_json['address'])))
-    if 'mailing_address' in input_json.keys():
-        query = query.filter(Person.mailing_address.ilike('%{}%'.format(input_json['mailing_address'])))
-    if 'birth_date' in input_json.keys():
-        query = query.filter(Person.birth_date.ilike('%{}%'.format(input_json['birth_date'])))
-    if 'is_prospect' in input_json.keys():
-        query = query.filter(Person.is_prospect == input_json['is_prospect'])
+    if input_json['mailingAddress']:
+        query = query.filter(Person.mailing_address.ilike('%{}%'.format(input_json['mailingaddress'])))
+    if input_json['birthDate']:
+        query = query.filter(Person.birth_date.ilike('%{}%'.format(input_json['birthDate'])))
+    if input_json['customerType']:
+        query = query.filter(Person.is_prospect == input_json['customerType'])
     return query.all()
 
 

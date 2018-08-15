@@ -5,6 +5,7 @@ import AddPerson from '@/components/AddPerson'
 import ModifyPerson from '@/components/ModifyPerson'
 import ListPeople from '@/components/ListPeople'
 import ListOfPeople from '@/components/ListOfPeople'
+import SearchPerson from '@/components/SearchPerson'
 
 Vue.use(Router)
 
@@ -41,6 +42,11 @@ export default new Router({
           ids: ids === '' ? [] : ids.split(',')
         }
       }
+    },
+    {
+      path: '/search-people',
+      name: 'SearchPerson',
+      component: SearchPerson
     }
   ]
 })

@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
-from frontend.ListConverter import ListConverter
+from flask_server.ListConverter import ListConverter
 
 app = Flask(__name__, template_folder='../frontend/templates')
 app.config['SQLALCHEMY_DATABASE_URI'] = \
