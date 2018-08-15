@@ -35,14 +35,16 @@
         </select>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-control-label" for="address">Address</label>
-      <input class="form-control form-control-sm" id="address" type="text" v-model="address"/>
-    </div>
-    <div class="form-group">
-      <label class="form-control-label" for="mailing_address">Mailing Address</label>
-      <small>(if different)</small>
-      <input class="form-control form-control-sm" id="mailing_address" type="text" v-model="mailingAddress"/>
+    <div class="row">
+      <div class="form-group col-6">
+        <label class="form-control-label" for="address">Address</label>
+        <input class="form-control form-control-sm" id="address" type="text" v-model="address"/>
+      </div>
+      <div class="form-group col-6">
+        <label class="form-control-label" for="mailing_address">Mailing Address</label>
+        <small>(if different)</small>
+        <input class="form-control form-control-sm" id="mailing_address" type="text" v-model="mailingAddress"/>
+      </div>
     </div>
     <div class="row">
       <div class="form-group col-5">
@@ -106,13 +108,30 @@ export default {
   methods: {
     add () {
       console.log(JSON.stringify(this.$data))
-      fetch('http://localhost:5000/api/person', {
+      return fetch('http://localhost:5000/api/person', {
         body: JSON.stringify(this.$data),
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         }
-      }).then()
+      }).then(response => response.json())
+        .then((response) => {
+          this.uniqueId = ''
+          this.prefix = ''
+          this.firstName = ''
+          this.middleName = ''
+          this.lastName = ''
+          this.suffix = ''
+          this.address = ''
+          this.mailingAddress = ''
+          this.birthDate = ''
+          this.customerType = ''
+          this.height = ''
+          this.weight = ''
+          this.socialSecurityNumber = null
+          this.canUseCreditScore = false
+          return response.unique_id
+        })
     },
     load (id) {
       fetch('http://localhost:5000/api/person/' + id)
