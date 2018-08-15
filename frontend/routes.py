@@ -42,21 +42,21 @@ def search_general():
         return redirect(url_for('find_people', unique_ids=get_general_people_like_or(form.input.data)))
 
 
-@app.route('/search-person', methods=['GET', 'POST'])
-def search_person():
-    form = SearchPersonForm()
-    if request.method == 'POST':
-        if not form.prefix.data and not form.first_name.data and not form.middle_name.data and \
-                not form.last_name.data and not form.suffix.data and not form.address.data and \
-                not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
-            return redirect(url_for('all_people'))
-        else:
-            unique_ids = [x.unique_id for x in get_people_like_and(form)]
-            if unique_ids:
-                return redirect(url_for('find_people', unique_ids=unique_ids))
-            else:
-                flash("Sorry there were no people found like that", 'warning')
-    return render_template('search_person.html', title='Search Person', form=form)
+# @app.route('/search-person', methods=['GET', 'POST'])
+# def search_person():
+#     form = SearchPersonForm()
+#     if request.method == 'POST':
+#         if not form.prefix.data and not form.first_name.data and not form.middle_name.data and \
+#                 not form.last_name.data and not form.suffix.data and not form.address.data and \
+#                 not form.mailing_address.data and not form.is_prospect.data and not form.birth_date.data:
+#             return redirect(url_for('all_people'))
+#         else:
+#             unique_ids = [x.unique_id for x in get_people_like_and(form)]
+#             if unique_ids:
+#                 return redirect(url_for('find_people', unique_ids=unique_ids))
+#             else:
+#                 flash("Sorry there were no people found like that", 'warning')
+#     return render_template('search_person.html', title='Search Person', form=form)
 
 
 @app.route('/get-person/<int:unique_id>', methods=['GET', 'POST'])
@@ -276,7 +276,6 @@ def api_person_driving_violation_id(unique_id: int):
 
 
 @app.route('/api/person', methods=['GET', 'POST'])
-@cross_origin()
 def api_person():
     if request.method == 'POST':
         print(request.get_json()['birthDate'])
@@ -286,8 +285,8 @@ def api_person():
     elif request.method == 'GET':
         page = 1
         everyone = Person.query
-        if 'page' in request.args:
-            page = int(request.args['page'])
+        if 'page' in request.headers:
+            page = int(request.headers['page'])
         return jsonify({
             'people': [x.to_json() for x in everyone.paginate(page, 20, False).items],
             'pages': (ceil(everyone.count() / 20))
@@ -299,19 +298,20 @@ def api_person_id(unique_id: int):
     person = Person.query.filter(Person.unique_id == unique_id).one()
     if request.method == 'PUT':
         input_json = request.get_json()
+        print(input_json)
         person.prefix = input_json.get('prefix')
-        person.first_name = input_json.get('first_name')
-        person.middle_name = input_json.get('middle_name')
-        person.last_name = input_json.get('last_name')
+        person.first_name = input_json.get('firstName')
+        person.middle_name = input_json.get('middleName')
+        person.last_name = input_json.get('lastName')
         person.suffix = input_json.get('suffix')
         person.address = input_json.get('address')
-        person.mailing_address = input_json.get('mailing_address')
-        person.birth_date = input_json.get('birth_date')
+        person.mailing_address = input_json.get('mailingAddress')
+        person.birth_date = input_json.get('birthDate')
         person.height = input_json.get('height')
         person.weight = input_json.get('weight')
-        person.customer_type = input_json.get('customer_type')
-        person.social_security_number = input_json.get('social_security_number')
-        person.can_use_credit_score = input_json.get('can_use_credit_score')
+        person.customer_type = input_json.get('customerType')
+        person.social_security_number = input_json.get('socialSecurityNumber')
+        person.can_use_credit_score = input_json.get('canUseCreditScore')
         person.update()
         if input_json.get('driving_accidents'):
             for driving_accident in input_json['driving_accidents'].values():
@@ -334,41 +334,55 @@ def api_person_id(unique_id: int):
         return jsonify({'success': True})
 
 
+@app.route('/api/search-person', methods=['POST'])
+def search_person():
+    unique_ids = [x.unique_id for x in get_people_like_and(request.get_json())]
+    return jsonify({'ids': unique_ids})
+
+
+@app.route('/api/search-general-person', methods=['POST'])
+def search_general_person():
+    print('here')
+    print(request.data)
+    unique_ids = [x.unique_id for x in get_general_people_like_or(request.get_json()['query'])]
+    return jsonify({'ids': unique_ids})
+
+
 def get_general_people_like_or(inp: str) -> list:
-    return [x.unique_id for x in Person.query.filter(or_(Person.prefix.ilike('%{}%'.format(inp)),
-                                                         Person.first_name.ilike('%{}%'.format(inp)),
-                                                         Person.middle_name.ilike('%{}%'.format(inp)),
-                                                         Person.last_name.ilike('%{}%'.format(inp)),
-                                                         Person.suffix.ilike('%{}%'.format(inp)),
-                                                         Person.address.ilike('%{}%'.format(inp)),
-                                                         Person.mailing_address.ilike('%{}%'.format(inp)),
-                                                         Person.birth_date.ilike('%{}%'.format(inp)),
-                                                         Person.height.ilike('%{}%'.format(inp)),
-                                                         Person.weight.ilike('%{}%'.format(inp)),
-                                                         Person.social_security_number.ilike(
-                                                             '%{}%'.format(inp)))).all()]
+    return Person.query.filter(or_(Person.prefix.ilike('%{}%'.format(inp)),
+                                   Person.first_name.ilike('%{}%'.format(inp)),
+                                   Person.middle_name.ilike('%{}%'.format(inp)),
+                                   Person.last_name.ilike('%{}%'.format(inp)),
+                                   Person.suffix.ilike('%{}%'.format(inp)),
+                                   Person.address.ilike('%{}%'.format(inp)),
+                                   Person.mailing_address.ilike('%{}%'.format(inp)),
+                                   Person.birth_date.ilike('%{}%'.format(inp)),
+                                   Person.height.ilike('%{}%'.format(inp)),
+                                   Person.weight.ilike('%{}%'.format(inp)),
+                                   Person.social_security_number.ilike('%{}%'.format(inp)))).all()
 
 
-def get_people_like_and(form) -> list:
+def get_people_like_and(input_json) -> list:
     query = Person.query
-    if form.prefix.data:
-        query = query.filter(Person.prefix.ilike('%{}%'.format(form.prefix.data)))
-    if form.first_name.data:
-        query = query.filter(Person.first_name.ilike('%{}%'.format(form.first_name.data)))
-    if form.middle_name.data:
-        query = query.filter(Person.middle_name.ilike('%{}%'.format(form.middle_name.data)))
-    if form.last_name.data:
-        query = query.filter(Person.last_name.ilike('%{}%'.format(form.last_name.data)))
-    if form.suffix.data:
-        query = query.filter(Person.suffix.ilike('%{}%'.format(form.suffix.data)))
-    if form.address.data:
-        query = query.filter(Person.address.ilike('%{}%'.format(form.address.data)))
-    if form.mailing_address.data:
-        query = query.filter(Person.mailing_address.ilike('%{}%'.format(form.mailing_address.data)))
-    if form.birth_date.data:
-        query = query.filter(Person.birth_date.ilike('%{}%'.format(form.birth_date.data)))
-    if form.is_prospect.data:
-        query = query.filter(Person.is_prospect == form.is_prospect.data)
+    print(input_json)
+    if 'prefix' in input_json.keys():
+        query = query.filter(Person.prefix.ilike('%{}%'.format(input_json['prefix'])))
+    if 'first_name' in input_json.keys():
+        query = query.filter(Person.first_name.ilike('%{}%'.format(input_json['first_name'])))
+    if 'middle_name' in input_json.keys():
+        query = query.filter(Person.middle_name.ilike('%{}%'.format(input_json['middle_name'])))
+    if 'last_name' in input_json.keys():
+        query = query.filter(Person.last_name.ilike('%{}%'.format(input_json['last_name'])))
+    if 'suffix' in input_json.keys():
+        query = query.filter(Person.suffix.ilike('%{}%'.format(input_json['suffix'])))
+    if 'address' in input_json.keys():
+        query = query.filter(Person.address.ilike('%{}%'.format(input_json['address'])))
+    if 'mailing_address' in input_json.keys():
+        query = query.filter(Person.mailing_address.ilike('%{}%'.format(input_json['mailing_address'])))
+    if 'birth_date' in input_json.keys():
+        query = query.filter(Person.birth_date.ilike('%{}%'.format(input_json['birth_date'])))
+    if 'is_prospect' in input_json.keys():
+        query = query.filter(Person.is_prospect == input_json['is_prospect'])
     return query.all()
 
 

@@ -132,7 +132,18 @@ export default {
           this.weight = response.weight
           this.socialSecurityNumber = response.social_security_number
           this.canUseCreditScore = response.can_use_credit_score
+          this.weight = response.weight
         })
+    },
+    update (id) {
+      console.log(JSON.stringify(this.$data))
+      fetch('http://localhost:5000/api/person/' + id, {
+        body: JSON.stringify(this.$data),
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }).then()
     }
   }
 }

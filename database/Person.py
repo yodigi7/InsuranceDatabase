@@ -1,10 +1,4 @@
-import datetime
-
-from sqlalchemy.exc import StatementError
-
-from database import Person_Driving
 from database.flask_db import db
-import simplejson as json
 
 from database.Person_Work import PersonWork
 from database.Person_Notes import PersonNotes

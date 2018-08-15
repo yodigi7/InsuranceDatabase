@@ -16,12 +16,12 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <router-link to="/add-person" class="dropdown-item">Add</router-link>
-            <a class="dropdown-item">All</a>
-            <a class="dropdown-item">Search</a>
+            <router-link to="/list-people/1" class="dropdown-item">All</router-link>
+            <router-link to="/search-person" class="dropdown-item">Search</router-link>
           </div>
         </li>
       </ul>
-      <form method="POST" class="form-inline my-2 my-lg-0" action="">
+      <form @submit.prevent="searchGeneralPerson" class="form-inline my-2 my-lg-0" action="">
         <input id="input" name="input" class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
         <button id="search" name="search" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
       </form>
@@ -31,7 +31,30 @@
 
 <script>
 export default {
-  name: 'Header'
+  name: 'Header',
+  methods: {
+    searchGeneralPerson () {
+      let query = document.getElementById('input').value
+      console.log(query)
+      fetch('http://localhost:5000/api/search-general-person', {
+        body: JSON.stringify({
+          query: query
+        }),
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        method: 'POST'
+      }).then(response => response.json())
+        .then(response => {
+          console.log(response.ids.toString())
+          return response.ids
+        })
+        .then((ids) => {
+          console.log(ids)
+          this.$router.push({ name: 'ListOfPeople', params: {ids: ids.join(',')} })
+        })
+    }
+  }
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <form method="POST" @submit.prevent="addPerson">
+    <form @submit.prevent="addPerson">
       <fieldset class="form-group">
         <legend class="border-bottom mb-4">Add a Person</legend>
         <div class="row">

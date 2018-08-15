@@ -8,7 +8,7 @@
         </div>
       </fieldset>
       <div class="form-group float-left">
-        <button class="btn btn-info">Modify</button>
+        <button class="btn btn-info">Save</button>
       </div>
     </form>
   </div>
@@ -24,7 +24,7 @@ export default {
   },
   methods: {
     modifyPerson () {
-      this.$refs.person.update()
+      this.$refs.person.update(this.$route.params.id)
     }
   }
 }
