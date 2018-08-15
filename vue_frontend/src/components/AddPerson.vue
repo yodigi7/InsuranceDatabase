@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <FlashMessage v-bind:message="message" type="success"></FlashMessage>
     <form @submit.prevent="addPerson">
       <fieldset class="form-group">
         <legend class="border-bottom mb-4">Add a Person</legend>
@@ -16,12 +17,20 @@
 
 <script>
 import Person from './Person'
+import FlashMessage from './FlashMessage'
 export default {
   name: 'AddPerson',
-  components: {Person},
+  components: {Person, FlashMessage},
+  data () {
+    return {
+      message: null
+    }
+  },
   methods: {
     addPerson () {
       this.$refs.person.add()
+      this.message = 'Successfully added person'
+      console.log(this.message)
     }
   }
 }
