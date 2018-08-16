@@ -30,6 +30,9 @@ export default {
           this.$data.note = ''
         })
       }
+    },
+    reset () {
+      this.note = ''
     }
   }
 }

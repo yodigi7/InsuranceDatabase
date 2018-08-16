@@ -2,8 +2,9 @@
   <div class="container-fluid">
     <div class="row">
       <div class="form-group col-sm-1 pr-0">
-        <label class="form-control-label" for="prefix">Prefix</label>
+        <label class="form-control-label" for="prefix" ref="prefix">Prefix</label>
         <select class="form-control form-control-sm" id="prefix" v-model="prefix">
+          <option></option>
           <option>Mrs.</option>
           <option>Ms.</option>
           <option>Mr.</option>
@@ -25,6 +26,7 @@
       <div class="form-group col-sm-1 pl-0">
         <label class="form-control-label" for="suffix">Suffix</label>
         <select class="form-control form-control-sm" id="suffix" v-model="suffix">
+          <option></option>
           <option>Sr.</option>
           <option>Jr.</option>
           <option>I</option>
@@ -47,13 +49,17 @@
       </div>
     </div>
     <div class="row">
-      <div class="form-group col-4">
+      <div class="form-group col-3">
         <label class="form-control-label" for="birth_date">Birth Date</label>
         <input class="form-control form-control-sm" id="birth_date" type="date" v-model="birthDate"/>
       </div>
-      <div class="form-group col-5">
+      <div class="form-group col-3">
         <label class="form-control-label" for="social_security_number">Social Security Number</label>
         <input class="form-control form-control-sm" id="social_security_number" type="number" v-model="socialSecurityNumber"/>
+      </div>
+      <div class="form-group col-3">
+        <label class="form-control-label" for="drivers_license_number">Drivers License Number</label>
+        <input class="form-control form-control-sm" id="drivers_license_number" v-model="driversLicenseNumber"/>
       </div>
       <div class="form-group col-sm-3">
         <label class="form-control-label" for="customer_type">Customer Type</label>
@@ -100,6 +106,7 @@ export default {
       height: '',
       weight: '',
       socialSecurityNumber: null,
+      driversLicenseNumber: null,
       canUseCreditScore: false
     }
   },
@@ -161,6 +168,9 @@ export default {
           'Content-Type': 'application/json'
         }
       }).then()
+    },
+    setFocus () {
+      this.$refs.prefix.focus()
     }
   }
 }

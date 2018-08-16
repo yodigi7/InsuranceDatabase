@@ -1,15 +1,17 @@
 <template>
     <div class="container-fluid">
-      <legend class="border-bottom pb-2 pt-4">Phones</legend>
+      <legend class="pb-2 pt-1">Phones</legend>
       <div class="card row" v-for="(phone, index) in phones" :key="phone">
-        <div class="card-body">
-          <Phone v-bind:ref="index" class="col-sm-8"></Phone>
-          <button type="button" class="close col-sm-1" v-on:click="deletePhone(phone)" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <div class="card-body p-1">
+          <div class="row px-1">
+            <Phone v-bind:ref="index" class="col-sm-11"></Phone>
+            <button type="button" class="close col-1" v-on:click="deletePhone(phone)" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
         </div>
       </div>
-      <button type="button" class="btn btn-info" v-on:click="addPhone">
+      <button type="button" class="btn btn-info mt-2" v-on:click="addPhone">
         Add phone
       </button>
     </div>
@@ -35,16 +37,24 @@ export default {
       } else {
         this.phones.push(1)
       }
+      this.$nextTick(() => {
+        this.$refs[this.phones.length - 1][0].setFocus()
+      })
     },
     add (uniqueId) {
-      for (var index in this.$refs) {
+      for (let index in this.$refs) {
         this.$refs[index][0].add(uniqueId)
       }
+    },
+    reset () {
+      this.phones = []
     }
   }
 }
 </script>
 
 <style scoped>
-
+Phone {
+  margin-right: -100px;
+}
 </style>

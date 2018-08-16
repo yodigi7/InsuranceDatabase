@@ -1,10 +1,10 @@
 <template>
-  <div class="container-fluid row">
-    <div class="form-group col-sm-6">
+  <div class="container row">
+    <div class="form-group col-sm-8 mb-0">
       <label class="form-control-label" for="phone-number">Phone</label>
-      <input class="form-control form-control-sm" type="number" id="phone-number" v-model="phoneNumber"/>
+      <input class="form-control form-control-sm mb-1" type="number" id="phone-number" v-model="phoneNumber" ref="phoneNumber"/>
     </div>
-    <div class="form-group col-sm-3">
+    <div class="form-group col-sm-4 mb-0">
       <label class="form-control-label" for="type">Type</label>
       <select class="form-control form-control-sm" id="type" v-model="type">
         <option></option>
@@ -46,6 +46,9 @@ export default {
           this.phoneNumber = null
           this.type = null
         })
+    },
+    setFocus () {
+      this.$refs.phoneNumber.focus()
     }
   }
 }

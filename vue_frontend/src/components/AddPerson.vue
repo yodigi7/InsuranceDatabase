@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid col-10">
     <FlashMessage v-bind:message="message" type="success"></FlashMessage>
     <form v-on:submit.prevent="addPersonAndNote">
       <fieldset class="form-group">
@@ -8,7 +8,7 @@
         <Note id="note" ref="note"></Note>
         <PhoneList ref="phoneList"></PhoneList>
       </fieldset>
-      <div class="form-group float-left">
+      <div class="form-group float-right">
         <button class="btn btn-info">Submit</button>
       </div>
     </form>
@@ -36,11 +36,19 @@ export default {
           this.$refs.note.add(uniqueId)
           this.$refs.phoneList.add(uniqueId)
         })
+        .then(() => {
+          this.$refs.note.reset()
+          this.$refs.phoneList.reset()
+        })
       this.message = 'Successfully added person'
       setTimeout(() => {
         this.message = null
       }, 5000)
     }
+  },
+  mounted () {
+    console.log(this.$refs.person)
+    this.$refs.person.setFocus()
   }
 }
 </script>
