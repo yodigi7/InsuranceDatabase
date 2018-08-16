@@ -1,7 +1,7 @@
 from math import ceil
 
 import requests
-from flask import render_template, flash, redirect, url_for, request, jsonify
+from flask import request, jsonify, render_template
 from sqlalchemy import or_
 
 from database.Person import Person, json_to_person
@@ -10,105 +10,6 @@ from database.Person_Notes import json_to_note, PersonNotes
 from database.Person_Phones import json_to_phone, PersonPhone
 from database.Person_Work import json_to_work, PersonWork
 from database.flask_db import app
-from flask_server.forms.add_basic_person import AddBasicPersonForm
-from flask_server.forms.add_person import AddPersonForm
-from flask_server.forms.get_person import GetBasicPersonForm
-from flask_server.forms.search_general_person import SearchGeneralPersonForm
-
-
-@app.route('/')
-@app.route('/home')
-def home():
-    return render_template('default.html', title='Home')
-
-
-@app.route('/all-people')
-def all_people():
-    persons = list(Person.query.all())
-    return render_template('find_people_results.html', title='All People', persons=persons)
-
-
-@app.route('/find-people/<list:unique_ids>')
-def find_people(unique_ids: list):
-    persons = list(Person.query.filter(Person.unique_id.in_(unique_ids)))
-    return render_template('find_people_results.html', title='All People', persons=persons)
-
-
-@app.route('/search-general-person', methods=['GET', 'POST'])
-def search_general():
-    form = SearchGeneralPersonForm()
-    if request.method == 'POST':
-        return redirect(url_for('find_people', unique_ids=get_general_people_like_or(form.input.data)))
-
-
-@app.route('/get-person/<int:unique_id>', methods=['GET', 'POST'])
-def get_person(unique_id):
-    person = Person.query.get_or_404(unique_id)
-    form = GetBasicPersonForm(obj=person)
-    form.first_name.default = person.first_name
-    if 'update_btn' in request.form and form.validate_on_submit():
-        form.populate_obj(person)
-        person.update()
-        flash('Person updated', 'success')
-    elif 'delete' in request.form:
-        person.delete()
-        flash('Person deleted', 'success')
-        return redirect(url_for('all_people'))
-    elif form.is_submitted():
-        for item in form.errors.items():
-            flash(item, 'danger')
-    return render_template('get_person.html', title='Get Person {}'.format(unique_id), person=person, form=form)
-
-
-@app.route('/add-person', methods=['GET', 'POST'])
-def add_person():
-    form = AddPersonForm()
-    if form.validate_on_submit():
-        Person(prefix=form.prefix.data,
-               first_name=form.first_name.data,
-               middle_name=form.middle_name.data,
-               last_name=form.last_name.data,
-               suffix=form.suffix.data,
-               address=form.address.data,
-               mailing_address=form.mailing_address.data,
-               birth_date=form.birth_date.data,
-               is_prospect=form.is_prospect.data,
-               social_security_number=form.social_security.data,
-               height=form.height.data,
-               weight=form.weight.data,
-               can_use_credit_score=form.can_use_credit_score.data).add()
-        flash('Person saved', 'success')
-        return redirect(url_for('all_people'))
-    elif request.method == 'POST':
-        for item in form.errors.items():
-            flash(item, 'danger')
-            return redirect(url_for('add_person'))
-    return render_template('add_person.html', title='Adding a Person', form=form)
-
-
-@app.route('/add-basic-person', methods=['GET', 'POST'])
-def add_basic_person():
-    form = AddBasicPersonForm()
-    if form.validate_on_submit():
-        Person(prefix=form.prefix.data,
-               first_name=form.first_name.data,
-               middle_name=form.middle_name.data,
-               last_name=form.last_name.data,
-               suffix=form.suffix.data,
-               address=form.address.data,
-               mailing_address=form.mailing_address.data,
-               birth_date=form.birth_date.data,
-               is_prospect=form.is_prospect.data).add()
-        flash('Person saved', 'success')
-        return redirect(url_for('all_people'))
-    elif request.method == 'POST':
-        for item in form.errors.items():
-            flash(item, 'danger')
-            return redirect(url_for('add_basic_person'))
-    return render_template('add_basic_person.html', title='Adding a Person', form=form)
-
-
-# API STUFF BELOW HERE
 
 
 @app.route('/api/person-phones', methods=['GET', 'POST'])
@@ -364,6 +265,12 @@ def search_general_person():
     print(request.data)
     unique_ids = [x.unique_id for x in get_general_people_like_or(request.get_json()['query'])]
     return jsonify({'ids': unique_ids})
+
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def home(path):
+    return render_template('index.html')
 
 
 def get_general_people_like_or(inp: str) -> list:
