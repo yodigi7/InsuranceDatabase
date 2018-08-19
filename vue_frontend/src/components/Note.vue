@@ -17,7 +17,7 @@ export default {
     add (personId) {
       if (this.note) {
         console.log('adding person note')
-        fetch('http://localhost:5000/api/person-notes', {
+        fetch('http://localhost:5000/api/notes', {
           method: 'POST',
           body: JSON.stringify({
             personId: personId,
@@ -30,6 +30,9 @@ export default {
           this.$data.note = ''
         })
       }
+    },
+    load (personId) {
+
     },
     reset () {
       this.note = ''

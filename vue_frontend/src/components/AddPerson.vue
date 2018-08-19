@@ -5,7 +5,7 @@
       <fieldset class="form-group">
         <legend class="border-bottom pb-2">Add a Person</legend>
         <Person ref="person"></Person>
-        <Note id="note" ref="note"></Note>
+        <Note ref="note"></Note>
         <PhoneList ref="phoneList"></PhoneList>
       </fieldset>
       <div class="form-group float-right">

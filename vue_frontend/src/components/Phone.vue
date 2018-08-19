@@ -20,18 +20,30 @@
 <script>
 export default {
   name: 'Phone',
-  props: ['unique_id'],
+  props: ['phoneId'],
   data () {
     return {
       phoneNumber: null,
       type: null
     }
   },
+  mounted: function () {
+    console.log(this.phoneId)
+    if (this.phoneId) {
+      fetch('http://localhost:5000/api/phone/' + this.phoneId)
+        .then(response => response.json())
+        .then((response) => {
+          console.log(response)
+          console.log()
+          this.phoneNumber = response.phone_number
+          this.type = response.type
+        })
+    }
+  },
   methods: {
     add (personId) {
       console.log(personId)
-      console.log('Adding phone')
-      fetch('http://localhost:5000/api/person-phones', {
+      fetch('http://localhost:5000/api/phone', {
         body: JSON.stringify({
           personId: personId,
           phoneNumber: this.phoneNumber,
