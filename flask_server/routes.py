@@ -12,7 +12,7 @@ from database.Person_Work import json_to_work, PersonWork
 from database.flask_db import app
 
 
-@app.route('/api/person-phones', methods=['GET', 'POST'])
+@app.route('/api/phone', methods=['GET', 'POST'])
 def api_person_phones():
     if request.method == 'POST':
         input_json = request.get_json()
@@ -30,9 +30,9 @@ def api_person_phones():
         })
 
 
-@app.route('/api/person-phones/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/api/phone/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
 def api_person_phones_id(unique_id: int):
-    person_phone = PersonPhone.query.filter(PersonPhone.person_id == unique_id).one()
+    person_phone = PersonPhone.query.filter(PersonPhone.unique_id == unique_id).one()
     if request.method == 'DELETE':
         person_phone.delete()
         return jsonify({'success': True})
@@ -46,7 +46,15 @@ def api_person_phones_id(unique_id: int):
         return jsonify({'success': True})
 
 
-@app.route('/api/person-notes', methods=['GET', 'POST'])
+@app.route('/api/phones-by-person/<int:unique_id>', methods=['GET'])
+def api_person_phones_by_person_id(unique_id: int):
+    phones = PersonPhone.query.filter(PersonPhone.person_id == unique_id).all()
+    if request.method == 'GET':
+        phones = [x.to_json() for x in phones]
+        return jsonify({'phones': phones})
+
+
+@app.route('/api/notes', methods=['GET', 'POST'])
 def api_person_notes():
     if request.method == 'POST':
         input_json = request.get_json()
@@ -63,9 +71,9 @@ def api_person_notes():
         })
 
 
-@app.route('/api/person-notes/<int:person_id>', methods=['GET', 'PUT', 'DELETE'])
-def api_person_notes_id(person_id: int):
-    person_note = PersonNotes.query.filter(PersonNotes.person_id == person_id).one()
+@app.route('/api/notes/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_person_notes_id(unique_id: int):
+    person_note = PersonNotes.query.filter(PersonNotes.unique_id == unique_id).one()
     if request.method == 'DELETE':
         person_note.delete()
         return jsonify({'success': True})
@@ -83,7 +91,7 @@ def api_person_notes_id(person_id: int):
         return jsonify({'success': True})
 
 
-@app.route('/api/person-work', methods=['GET', 'POST'])
+@app.route('/api/work', methods=['GET', 'POST'])
 def api_person_work():
     if request.method == 'POST':
         input_json = request.get_json()
@@ -100,9 +108,9 @@ def api_person_work():
         })
 
 
-@app.route('/api/person-work/<int:person_id>', methods=['GET', 'PUT', 'DELETE'])
-def api_person_work_id(person_id: int):
-    work = PersonWork.query.filter(PersonWork.person_id == person_id).one()
+@app.route('/api/work/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+def api_person_work_id(unique_id: int):
+    work = PersonWork.query.filter(PersonWork.unique_id == unique_id).one()
     if request.method == 'DELETE':
         work.delete()
         return jsonify({'success': True})
@@ -119,7 +127,7 @@ def api_person_work_id(person_id: int):
         return jsonify({'success': True})
 
 
-@app.route('/api/person-driving-accident', methods=['GET', 'POST'])
+@app.route('/api/driving-accident', methods=['GET', 'POST'])
 def api_person_driving_accident():
     if request.method == 'POST':
         json_to_accident(request.get_json()).add()
@@ -136,7 +144,7 @@ def api_person_driving_accident():
         return jsonify(return_json)
 
 
-@app.route('/api/person-driving-accident/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/api/driving-accident/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
 def api_person_driving_accident_id(unique_id: int):
     driving_accident = PersonDrivingAccident.query.filter(PersonDrivingAccident.unique_id == unique_id).one()
     if request.method == 'GET':
@@ -156,7 +164,7 @@ def api_person_driving_accident_id(unique_id: int):
         return jsonify({'success': True})
 
 
-@app.route('/api/person-driving-violation', methods=['GET', 'POST'])
+@app.route('/api/driving-violation', methods=['GET', 'POST'])
 def api_person_driving_violation():
     if request.method == 'POST':
         json_to_violation(request.get_json()).add()
@@ -172,7 +180,7 @@ def api_person_driving_violation():
         })
 
 
-@app.route('/api/person-driving-violation/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
+@app.route('/api/driving-violation/<int:unique_id>', methods=['GET', 'PUT', 'DELETE'])
 def api_person_driving_violation_id(unique_id: int):
     driving_violation = PersonDrivingViolation.query.filter(PersonDrivingViolation.unique_id == unique_id).one()
     if request.method == 'GET':
@@ -234,16 +242,16 @@ def api_person_id(unique_id: int):
         person.update()
         if input_json.get('driving_accidents'):
             for driving_accident in input_json['driving_accidents'].values():
-                requests.put('/api/person-driving-accident/{}'.format(driving_accident['unique_id']),
+                requests.put('/api/driving-accident/{}'.format(driving_accident['unique_id']),
                              json=jsonify(driving_accident))
         if input_json.get('driving_violations'):
             for driving_violation in input_json['driving_violations'].values():
-                requests.put('/api/person-driving-violation/{}'.format(driving_violation['unique_id']),
+                requests.put('/api/driving-violation/{}'.format(driving_violation['unique_id']),
                              json=jsonify(driving_violation))
         if input_json.get('note'):
-            requests.put('/api/person-note', json=jsonify(input_json['note'][0]))
+            requests.put('/api/note', json=jsonify(input_json['note'][0]))
         if input_json.get('work'):
-            requests.put('/api/person-work', json=jsonify(input_json['work'][0]))
+            requests.put('/api/work', json=jsonify(input_json['work'][0]))
         return jsonify({'success': True})
     elif request.method == 'GET':
         print(person.to_json()['birth_date'])
