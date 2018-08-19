@@ -19,7 +19,8 @@ export default new Router({
     {
       path: '/add-person',
       name: 'AddPerson',
-      component: AddPerson
+      component: AddPerson,
+      title: 'add-person'
     },
     {
       path: '/modify-person/:id',
